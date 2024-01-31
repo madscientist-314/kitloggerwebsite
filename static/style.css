@@ -1,0 +1,298 @@
+/*
+  GNU AGPLv3.0 2023 
+  Software: v0.0.8
+  Kit Logger - DofE Kit Management System
+  Copyright (C) 2023 Thomas Kirby
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program [LICENSE.txt].  If not, see <https://www.gnu.org/licenses/>.
+*/
+* {
+     box-sizing: border-box;
+   }
+   
+   .column {
+     float: left;
+     width: 50%;
+     padding: 10px;
+   }
+   
+   .column img {
+     opacity: 0.8;
+     cursor: pointer;
+   }
+   
+   .column img:hover {
+     opacity: 1;
+   }
+   
+   .row:after {
+     content: "";
+     display: table;
+     clear: both;
+   }
+   
+   .closebtn {
+     position: absolute;
+     top: 10px;
+     right: 15px;
+     color: white;
+     font-size: 35px;
+     cursor: pointer;
+   }
+   
+   body {
+     font-family: Arial, Helvetica, sans-serif;
+     color: #000000
+   }
+   
+   img.background {
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     z-index: -1;
+     width: 150%;
+     height: 150%;
+     -webkit-filter: blur(5px);
+     filter: blur(5px);
+   }
+   
+   .nav {
+     border-radius: 25px;
+     border: 2px solid #02269e;
+     top: 0px;
+     background-color: #02269e;
+     padding: 0px;
+     position: sticky;
+     max-width: 8000px;
+     margin-right: 7px;
+     margin-left: 7px;
+   }
+   
+   .naverror {
+     border-radius: 25px;
+     border: 2px solid #8400c6;
+     top: 0px;
+     background-color: #8400c6;
+     padding: 0px;
+     position: sticky;
+     max-width: 8000px;
+     margin-right: 7px;
+     margin-left: 7px;
+   }
+   
+   .topnav {
+     border-radius: 25px;
+     border: 2px solid #02269e;
+     overflow: hidden;
+   }
+   
+   .topnav a {
+     float: right;
+     color: #ffffff;
+     text-align: center;
+     padding: 10px 16px;
+     text-decoration: none;
+     font-size: 21px;
+     font-family: Arial, Helvetica, sans-serif;
+     transition-duration: 0.3s;
+   }
+   
+   .topnaverror a {
+     float: center;
+     color: #ffffff;
+     text-align: center;
+     padding: 10px 10px;
+     text-decoration: none;
+     font-size: 21px;
+     font-family: Arial, Helvetica, sans-serif;
+     transition-duration: 0.3s;
+     border-radius: 25px;
+     border: 2px solid #8400c6;
+     overflow: hidden;
+   }
+   
+   .topnav a.leftimg {
+     float: left;
+     color: #ffffff;
+     text-align: center;
+     padding: 10px 20px;
+     text-decoration: none;
+     transition-duration: 0.3s;
+   }
+   
+   .topnave a.leftimg {
+     float: left;
+     color: #ffffff;
+     text-align: center;
+     padding: 10px 20px;
+     text-decoration: none;
+     transition-duration: 0.3s;
+   }
+   
+   .topnave a.c {
+     float: middle;
+     padding: 10px 10px;
+     transition-duration: 0.3s;
+   }
+   
+   .topnav a:hover {
+     background-color: #1239ba;
+   }
+   
+   .topnave a:hover {
+     background-color: #aa6dff;
+   }
+   
+   .topnav a.active {
+     background-color: #1239ba;
+   }
+   
+   .topnav a.b:hover {
+     background-color: #aa5139;
+   }
+   
+   .topnav a.si:hover {
+     background-color: #b2b1b0;
+   }
+   
+   .topnav a.g:hover {
+     background-color: #c69f52;
+     color: #000;
+   }
+   
+   .topnav a.e:hover {
+     background-color: #8cc04b;
+     color: #000;
+     z-index: 3;
+   }
+   
+   .topnav a.v:hover {
+     background-color: #e51846;
+     color: #000;
+     z-index: 3;
+   }
+   
+   .topnav a.s:hover {
+     background-color: #009fe3;
+     color: #000;
+     z-index: 3;
+   }
+   
+   .topnav a.p:hover {
+     background-color: #fec800;
+     color: #000;
+     z-index: 3;
+   }
+   
+   .footer {
+     background-color: #00244b;
+     border: 2px solid #00244b;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+     text-align: center;
+     font-size: 12px;
+     color: #fff;
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     width: 100%;
+   }
+   
+   .footer a.b {
+     color: #ffffff;
+     background-color: #223c38;
+     text-align: center;
+     padding: 5px 10px;
+     text-decoration: none;
+     font-family: Arial, Helvetica, sans-serif;
+     border-radius: 15px;
+     font-size: 14px;
+     transition-duration: 0.3s;
+   }
+   
+   .footer a.b:hover {
+     background-color: #345d56;
+   }
+   
+   h1 {
+     color: #000;
+     font-family: verdana;
+     font-size: 200%;
+   }
+   
+   h2 {
+     color: white;
+     font-family: TimesNewRoman;
+     font-size: 180%;
+   }
+   
+   h3 {
+     color: white;
+     font-family: TimesNewRoman;
+     font-size: 120%;
+   }
+   
+   h4 {
+     color: white;
+     font-family: TimesNewRoman;
+   }
+   
+   p {
+     color: #000;
+     font-family: TimesNewRoman;
+   }
+   
+   p.f {
+     color: #fff;
+     font-family: Arial, Helvetica, sans-serif;
+     font-size: 14px;
+   }
+   
+   table {
+     font-family: arial, sans-serif;
+     border-collapse: collapse;
+     width: 100%;
+   }
+   
+   td {
+     border: 1px solid #dddddd;
+     text-align: left;
+     padding: 5px;
+   }
+   
+   div.gallery {
+     margin: 5px;
+     border: 1px solid #ccc;
+     float: center;
+     width: 180px;
+   }
+   
+   div.gallery:hover {
+     border: 1px solid #777;
+   }
+   
+   div.gallery img {
+     width: 100%;
+     height: auto;
+   }
+   
+   div.desc {
+     padding: 1px;
+     text-align: center;
+   }
+   
+   script {
+     display: none;
+   }
+   
