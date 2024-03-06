@@ -92,17 +92,15 @@ body {
 
 /* Footer */
   .footer {
-   background-color: var(--schBlue);
-    border: 2px solid var(--schBlue);
+    background-color: var(--schBlue);
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     text-align: center;
     font-size: 12px;
     color: #fff;
-    position: absolute;
+    position: fixed;
     bottom: 0;
-    left: 0;
-    width: 100%;
+    width: auto;
   }
   
   .footer a.button {
