@@ -32,9 +32,10 @@
     <script>
       var root = document.querySelector(':root');
       var rs = getComputedStyle(root);
-      rs.getPropertyValue('--red');
-      rs.getPropertyValue('--redHover');
-      root.style.setProperty('--index', '--red');
+      var change = rs.getPropertyValue('--red');
+      var changeHover = rs.getPropertyValue('--redHover');
+      root.style.setProperty('--index', change);
+      root.style.setProperty('--indexHover', changeHover);
       </script>
 
   </head>
