@@ -96,6 +96,12 @@ body {
     z-index: 3;
   }
   
+.topnav a.hover:hover {
+    background-color: #204ad4;
+    color: #000;
+    z-index: 3;
+  }
+
   .topnav a.red:hover {
     background-color: var(--redHover);
     color: #000;
