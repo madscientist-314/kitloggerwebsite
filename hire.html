@@ -19,7 +19,7 @@
 -->
 <!DOCTYPE html>
 <html lang="en-EN">
-  <title>Kit Logger - Hire</title>
+  <title>Hire - Kit Logger</title>
 
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,14 +31,10 @@
     />
     <script>
       var root = document.querySelector(':root');
-      function styleGet() {
-        var rs = getComputedStyle(root);
-      }
-      function styleSet() {
-        rs.getPropertyValue('--red');
-        rs.getPropertyValue('--redHover');
-        root.style.setProperty('--index', '--red');
-      }
+      var rs = getComputedStyle(root);
+      rs.getPropertyValue('--red');
+      rs.getPropertyValue('--redHover');
+      root.style.setProperty('--index', '--red');
       </script>
 
   </head>
