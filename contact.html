@@ -19,53 +19,28 @@
 -->
 <!DOCTYPE html>
 <html lang="en-EN">
-  <title>Login - Kit Logger</title>
+  <title>Hire - Kit Logger</title>
 
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="google-signin-client_id" content="198686331733-vg9igi4g54kfqn0659vdtu6rfnhdoqtq.apps.googleusercontent.com"/>
     <link rel="icon" href="https://i.imgur.com/ERlryfF.png" />
     <link
       rel="stylesheet"
       href="static\style.css"
       type="text/css"
     />
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script>
-      function onSignIn(googleUser) {
-        var profile = googleUser.getBasicProfile();
-        console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        console.log("Name: " + profile.getName());
-        console.log("Image URL: " + profile.getImageUrl());
-        console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
-      }
-
-      function signOut() {
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-          console.log("User signed out.");
-        });
-      }
-
-      function onLoad() {
-        gapi.load("auth2", function () {
-          gapi.auth2.init();
-        });
-      }
-    </script>
     <script>
       var root = document.querySelector(':root');
       var rs = getComputedStyle(root);
-      root.style.setProperty('--index', '#8cc04b');
-      root.style.setProperty('--indexHover', '#a9e461');
+      root.style.setProperty('--index', '#fec800');
     </script>
-    
+
   </head>
 
   <body>
     <div class="nav">
       <div class="topnav">
-        <a padding="0" , href="login.html">
+        <a padding="0" , href="hire.html">
           <img
             margin="0"
             padding="0"
@@ -86,17 +61,15 @@
           />
         </a>
 
-        <a class="active" href="login.html"> Login </a>
+        <a href="login.html"> Login </a>
         <a href="contact.html"> Contact </a>
         <a href="faqs.html"> FAQs </a>
-        <a href="hire.html"> Hire </a>
+        <a class="active" href="hire.html"> Hire </a>
         <a href="news.html"> News </a>
         <a href="index.html"> Home </a>
       </div>
     </div>
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>
-    <p></p>
+
     <div class="footer">
       <p class="f">
         St Clement Danes School<br /><br />
@@ -112,6 +85,7 @@
           href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw"
           target="_blank"
           rel="noopener noreferrer"
+          data-show-count="false"
           >Follow @SCDDofE</a
         >
         <script
@@ -119,7 +93,6 @@
           src="https://platform.twitter.com/widgets.js"
           charset="utf-8"
         ></script>
-        <!--https://publish.twitter.com/#-->
       </p>
     </div>
   </body>

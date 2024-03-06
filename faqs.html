@@ -29,7 +29,13 @@
     href="static\style.css"
     type="text/css"
   />
+  <script>
+    var root = document.querySelector(':root');
+    var rs = getComputedStyle(root);
+    root.style.setProperty('--index', '#009fe3');
+  </script>
 
+</head> 
   <body>
     <div class="nav">
       <div class="topnav">
