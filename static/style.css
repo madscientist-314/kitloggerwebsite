@@ -20,6 +20,8 @@
 :root {
   --index: #02269e;
   --indexHover: #1239ba;
+  --secondary:#8ce4fabb;
+  --accent: #3257f9bb;
   --purple: #9549ff;
   --purpleHover: #aa6dff;
   --red: #e51846;
@@ -31,7 +33,7 @@
   --green: #8cc04b;
   --greenHover: #a9e461;
   --white: #ffffff;
-  --black: #000000;
+  --black: #1c1c1c;
   --grey: #808080;
   --schBlue: #00244b;
   --schBlueHover: #063567;
@@ -41,6 +43,7 @@
   --lightGrey: #a2a2a2;
   --transIndex: #02269e88;
   --transRed: #e5184688;
+  --background: #fff7e4;
   --font: OpenSans;
   --fontItalic: OpenSansItalic;
 
@@ -66,6 +69,7 @@
 body {
   font-family: var(--font);
   color: var(--black);
+  background-color: var(--background);
 }
 /* Navigation Bar */
 .topnav {
@@ -99,12 +103,12 @@ body {
   margin-left: 7px;
 }
 
-.topnav a.leftimg {
+.topnav a.left {
   /* Navigation Bar Logo */
   float: left;
   color: var(--white);
   text-align: center;
-  padding: 10px 20px;
+  padding: 8px 10px;
   text-decoration: none;
   transition-duration: 0.3s;
 }
@@ -233,33 +237,47 @@ a.embed {
   font-weight: 600;
 }
 
-/*Containers*/
-.container {
-  border: 1px solid var(--index);
-  font-family: var(--font);
-  grid-column-start: 1;
-  height: auto;
-  padding: 6px;
-  position: relative;
-  text-align: justify;
+/*FlexBoxes*/
+.flex-box {
+  display: flex;
+  flex-direction: row;
   justify-content: space-evenly;
-  background-color: var(--transIndex);
+  align-items: stretch;
+  flex-wrap: wrap;
+  padding: 10px;
+  background-color: var(--white);
+  border-radius: 25px;
 }
 
-.containerRed {
-  border: 1px solid var(--index);
+.flex-box > div.accent {
+  border: 1px solid var(--pu);
   font-family: var(--font);
-  grid-column-start: 2;
+  max-width: 370px;
   height: auto;
   padding: 6px;
+  margin: 3px;
   position: relative;
   text-align: justify;
+  border-radius: 5px;
+  background-color: var(--accent);
   justify-content: space-evenly;
-  background-color: var(--transRed);
+}
+
+.flex-box > div.secondary {
+  border: 1px solid var(--pu);
+  font-family: var(--font);
+  max-width: 370px;
+  height: auto;
+  padding: 6px;
+  margin: 3px;
+  position: relative;
+  text-align: justify;
+  background-color: var(--secondary);
+  border-radius: 5px;
+  justify-content: space-evenly;
 }
 
 /*Grids*/
 .col {
   columns: 2;
-  row-gap: 1;
 }
