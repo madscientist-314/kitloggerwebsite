@@ -1,5 +1,4 @@
-<!-- 
-  GNU AGPLv3.0 2023 
+<!-- GNU AGPLv3.0 2023 
   Software: v0.0.10
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
@@ -33,12 +32,14 @@
       var root = document.querySelector(':root');
       var rs = getComputedStyle(root);
       root.style.setProperty('--index', '#9549ff');
-      root.style.setProperty('--indexHover', '#aa6dff')
+      root.style.setProperty('--indexHover', '#aa6dff');
+      root.style.setProperty("--secondary", "#86f3e7");
+      root.style.setProperty("--accent", "#4962ec");
     </script>
     
   </head>
 
-  <body>
+  <nav>
     <div class="nav">
       <div class="topnav">
         <a padding="0" , href=news.html">
@@ -82,8 +83,14 @@
         </a>
       </div>
     </div>
+  </nav>
+
+  <body>
     <h1>Kit Logger</h1>
     <p></p>
+  </body>
+
+  <footer>
     <div class="footer">
       <p class="footer">
         St Clement Danes School<br /><br />
@@ -109,5 +116,5 @@
         <!--https://publish.twitter.com/#-->
       </p>
     </div>
-  </body>
+  </footer>
 </html>
