@@ -173,7 +173,7 @@ h4 {
 sub {
   color: var(--black);
   border-radius: 10px;
-  font-family: var(--font);
+  font-family: var(--fontItalic);
   background: var(--lightGrey);
   padding: 4px;
   margin: 5px;
@@ -201,13 +201,14 @@ td {
   text-align: left;
   padding: 5px;
 }
-/* Other Bits */
+
 script {
   display: none;
 }
 
+/*Interactions*/
 .button {
-  color: #ffffff;
+  color: var(--white);
   background-color: var(--index);
   text-align: center;
   padding: 5px 10px;
@@ -218,13 +219,67 @@ script {
   transition-duration: 0.3s;
 }
 
-.button:hover {
+button.hire {
+  color: var(--white);
+  background-color: var(--index);
+  text-align: center;
+  padding: 5px 10px;
+  text-decoration: none;
+  font-family: var(--font);
+  border-radius: 15px;
+  font-size: 14px;
+  transition-duration: 0.3s;
+  margin: 0 auto;
+  width: 400px;
+}
+
+button.hire:hover {
   background-color: var(--indexHover);
 }
 
 a.embed {
   color: var(--index);
   font-weight: 600;
+}
+
+form.hire {
+  margin: 0 auto;
+  width: 400px;
+  padding: 10px;
+  border: 1px solid var(--grey);
+  border-radius: 10px;
+  background-color: var(--background);
+}
+
+form.hire > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+form.hire > ul > li{
+  margin: 3px;
+}
+
+label {
+  display: inline-block;
+  width: 
+  70px;
+  text-align: right;
+}
+
+input,
+textarea {
+  font: var(--font);
+  width: 300px;
+  box-sizing: border-box;
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+}
+
+textarea {
+  vertical-align: top;
+  height: 5em;
 }
 
 /*FlexBoxes*/
@@ -240,7 +295,7 @@ a.embed {
 }
 
 .flex-box > div.accent {
-  border: 1px solid var(--pu);
+  border: 1px solid var(--accent);
   font-family: var(--font);
   max-width: 370px;
   height: auto;
@@ -251,12 +306,27 @@ a.embed {
   border-radius: 5px;
   background-color: var(--accent);
   justify-content: space-evenly;
+  color: var(--black);
 }
 
 .flex-box > div.secondary {
-  border: 1px solid var(--pu);
+  border: 1px solid var(--secondary);
   font-family: var(--font);
   max-width: 370px;
+  height: auto;
+  padding: 6px;
+  margin: 3px;
+  position: relative;
+  text-align: justify;
+  background-color: var(--secondary);
+  border-radius: 5px;
+  justify-content: space-evenly;
+}
+
+.flex-box > div.form {
+  border: 1px solid var(--secondary);
+  font-family: var(var(--font));
+  max-width: 400px;
   height: auto;
   padding: 6px;
   margin: 3px;
