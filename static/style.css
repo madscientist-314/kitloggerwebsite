@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.0.8
+  Software: v0.0.13
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -33,10 +33,9 @@
   --lightGrey: #a2a2a2;
   --transIndex: #02269e88;
   --transRed: #e5184688;
-  --background: #fff7e4;
+  --background: #fcf1d9;
   --font: OpenSans;
   --fontItalic: OpenSansItalic;
-
 }
 
 @font-face {
@@ -47,6 +46,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   /*https://transfonter.org*/
   font-family: "OpenSansItalic";
@@ -144,7 +144,8 @@ body {
 .footer a.link {
   color: var(--white);
 }
-/* Page Content */
+
+/* Page Contents */
 h1 {
   color: var(--black);
   font-family: var(--font);
@@ -189,6 +190,7 @@ p.white {
   font-family: var(--font);
   font-size: 12px;
 }
+
 /* Table */
 table {
   font-family: var(--font);
@@ -282,7 +284,7 @@ textarea {
   height: 5em;
 }
 
-/*FlexBoxes*/
+/* FlexBoxes */
 .flex-box {
   display: flex;
   flex-direction: row;
@@ -337,7 +339,7 @@ textarea {
   justify-content: space-evenly;
 }
 
-/*Grids*/
+/* Grids */
 .col {
   columns: 2;
 }
