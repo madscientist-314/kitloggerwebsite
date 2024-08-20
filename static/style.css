@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.0.13
+  Software: v0.0.14
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -36,6 +36,7 @@
   --background: #fcf1d9;
   --font: OpenSans;
   --fontItalic: OpenSansItalic;
+  --warning: #ff905d;
 }
 
 @font-face {
@@ -61,8 +62,9 @@ body {
   color: var(--black);
   background-color: var(--background);
 }
-/* Navigation Bar */
+
 .topnav {
+  /* Navigation Bar */
   border-radius: 25px;
   overflow: hidden;
   border: 2px solid var(--index);
@@ -77,13 +79,26 @@ body {
 .topnav a {
   /* Navigation Bar Links */
   float: right;
+  text-align: center;
+  vertical-align: middle;
   color: var(--white);
   text-align: center;
-  padding: 8px 10px;
+  padding: 8px;
   text-decoration: none;
   font-size: 18px;
   font-family: var(--font);
-  transition-duration: 0.3s;
+}
+
+span.material-symbols-outlined {
+  /* Nav Bar Icons */
+  /* https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web */
+  vertical-align: inherit;
+  font-size: 22px;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 18
 }
 
 .topnav.container {
@@ -94,17 +109,17 @@ body {
 }
 
 .topnav a.left {
-  /* Navigation Bar Logo */
+  /* DofE Logo */
   float: left;
   color: var(--white);
   text-align: center;
   padding: 8px 10px;
   text-decoration: none;
-  transition-duration: 0.3s;
 }
 
 .topnav a:hover {
   background-color: var(--indexHover);
+  transition-duration: 300ms;
 }
 
 .topnav a.active {
@@ -161,7 +176,7 @@ h2 {
 }
 
 h3 {
-  color: var(--white);
+  color: var(--black);
   font-family: var(--font);
   font-size: 120%;
 }
@@ -244,11 +259,14 @@ a.embed {
   font-weight: 600;
 }
 
+a.redirect {
+  color: var(--index);
+}
+
 form.hire {
   margin: 0 auto;
-  width: 400px;
-  padding: 10px;
-  border: 1px solid var(--grey);
+  width: 470px;
+  padding: 5px;
   border-radius: 10px;
   background-color: var(--background);
 }
@@ -266,14 +284,22 @@ form.hire > ul > li{
 label {
   display: inline-block;
   width: 
-  70px;
+  100px;
   text-align: right;
+}
+
+input.date {
+  font: var(--font);
+  width: 121px;
+  box-sizing: border-box;
+  border: 1px solid var(--grey);
+  border-radius: 5px;
 }
 
 input,
 textarea {
   font: var(--font);
-  width: 300px;
+  width: 350px;
   box-sizing: border-box;
   border: 1px solid var(--grey);
   border-radius: 5px;
@@ -311,6 +337,21 @@ textarea {
   color: var(--black);
 }
 
+.flex-box > div.warning{
+  border: 1px solid var(--warning);
+  font-family: var(--font);
+  color: var(--black);
+  max-width: 480px;
+  height: auto;
+  padding: 6px;
+  margin: 3px;
+  position: relative;
+  text-align: justify;
+  border-radius: 5px;
+  background-color: var(--warning);
+  justify-content: space-evenly;
+}
+
 .flex-box > div.secondary {
   border: 1px solid var(--secondary);
   font-family: var(--font);
@@ -327,15 +368,15 @@ textarea {
 
 .flex-box > div.form {
   border: 1px solid var(--secondary);
-  font-family: var(var(--font));
-  max-width: 400px;
+  font-family: var(--font);
+  max-width: 500px;
   height: auto;
   padding: 6px;
   margin: 3px;
   position: relative;
   text-align: justify;
   background-color: var(--secondary);
-  border-radius: 5px;
+  border-radius: 10px;
   justify-content: space-evenly;
 }
 
@@ -343,3 +384,5 @@ textarea {
 .col {
   columns: 2;
 }
+
+
