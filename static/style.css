@@ -247,7 +247,7 @@ button.hire {
   font-size: 14px;
   transition-duration: 0.3s;
   margin: 0 auto;
-  width: 400px;
+  width: 100%;
 }
 
 button.hire:hover {
@@ -265,7 +265,7 @@ a.redirect {
 
 form.hire {
   margin: 0 auto;
-  width: 470px;
+  width: 98%;
   padding: 5px;
   border-radius: 10px;
   background-color: var(--background);
@@ -283,14 +283,13 @@ form.hire > ul > li{
 
 label {
   display: inline-block;
-  width: 
-  100px;
+  width: 20%;
   text-align: right;
 }
 
 input.date {
   font: var(--font);
-  width: 121px;
+  width: 26.6%;
   box-sizing: border-box;
   border: 1px solid var(--grey);
   border-radius: 5px;
@@ -299,15 +298,16 @@ input.date {
 input,
 textarea {
   font: var(--font);
-  width: 350px;
+  width: 75%;
   box-sizing: border-box;
   border: 1px solid var(--grey);
   border-radius: 5px;
 }
 
 textarea {
+  width: 100%;
   vertical-align: top;
-  height: 5em;
+  height: 7em;
 }
 
 /* FlexBoxes */
