@@ -82,47 +82,62 @@
     <br>
     <div class="flex-box">
       <div class="warning">
-        <b>WARNING: The following form is for EXTERNAL APPLICANTS ONLY.</b>
-        If you are a student or staff member, please <a href="login.html" style="text-decoration: none;">login</a> to access the internal hire form.
+        <span class="material-symbols-outlined">
+          notification_important
+          </span> <b>WARNING: The following form is for EXTERNAL APPLICANTS ONLY.</b>
+        If you are a <b>student</b> or <b>staff</b> member, please <a href="login.html" style="text-decoration: none;"><b>login</b></a> to access the internal hire form.
       </div>
       <div class="form">
-      <form class="hire" action="/form-handler.html" method="post">
+      <form class="hire">
         <ul>
           <li>
+            <p style="text-align: center; font-weight: 1000; font-size: 20px;"><b>External Hire Form</b></p>
             <label for="name">Name:</label>
-            <input type="text" id="name" name="userName" />
+            <input type="text" id="name" name="userName" required>*
+          </li>
+          <li>
+            <label for="mail">Company:</label>
+            <input type="text" id="company" name="company" required>*
           </li>
           <li>
             <p style="text-align: center;"><b>Event Details</b></p>
             <label for="mail">Event:</label>
-            <input type="text" id="subject" name="subject" />
+            <input type="text" id="subject" name="subject" required>*
           </li>
           <li>
-            <label for="mail">Location:</label>
-            <input type="text" id="location" name="location" />
-          </li>
           <li>
             <label for="mail">Start Date:</label>
-            <input class="date" type="text" id="startDate" name="startDate" />
+            <input class="date" type="date" id="startDate" name="startDate" required>*
             <label for="mail">End Date:</label>
-            <input class="date" type="text" id="endDate" name="userEmail" />
+            <input class="date" type="date" id="endDate" name="userEmail" required>*
           </li>
           <li>
-            <p style="text-align: center;"><b>Message</b></p>
-            <textarea id="msg" name="userMessage"></textarea>
+            <p style="text-align: center;"><b>Message*</b></p>
+            <textarea id="msg" name="userMessage" required></textarea>
           </li>
           <li>
             <p style="text-align: center;"><b>Contact Details</b></p>
             <label for="mail">Email:</label>
-            <input type="email" id="email" name="userEmail" />
-            </li>
+            <input type="email" id="email" name="userEmail" required>*
+          </li>
           <li>
-            <label for="">
+            <label for="mail">Phone:</label>
+            <input type="tel" id="phone" name="userPhone" style="border: 1px solid var(--grey);">
+          </li>
           <li>
-            <button class="hire" id="externalHire" type="submit">Submit</button>
+            <label for="mail">Address:</label>
+            <input type="text" id="address" name="userAddress" style="border: 1px solid var(--grey);">
+          </li>
+          <p style="font-size: 70%; color: var(--grey)">*indicates a required field</p>
+
+            <button class="hire" id="externalHire" >Submit</button>
             <script>
-              document.getElementById("externalHire").onclick = function() {
+              document.getElementById("externalHire").onclick = externalHire(); {
                 alert("Thank you for your request. We will be in touch shortly.");
+                document.getElementById("externalHire").innerHTML = "Submitted";
+                var name = document.getElementById("name")
+                console.log("Name: " + name.value);
+                document.getElementById("test").innerHTML = "Name: " + name.value;
               };
             </script>
           </li>
@@ -130,6 +145,7 @@
       </form>
     </div>
     </div>
+    <p id="test"></p>
     <br><br><br><br><br>
   </body>
 
