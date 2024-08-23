@@ -23,20 +23,22 @@ const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 
-// Setting up the app
 const app = express();
 const port = 3000;
 
-// Using body-parser middleware
+// Middleware to parse JSON and URL-encoded data
+app.use(cors());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(cors()); // Enable CORS
 
-// Defining the route for the root URL
 app.post("/submit-form", (req, res) => {
   console.log("Form submission received"); // Log when the form is received
 
   const formData = req.body;
   console.log("Form data:", formData); // Log the form data
+
+  emailMessage = formData["userName"] + " has requested to hire kit for " + formData["event"] + " from " + formData["startDate"] + " to " + formData["endDate"] + ".\nThey have provided the following details:\n" + formData["userMessage"] + ".\nYou can contact them at " + formData["userEmail"] + " to confirm the hire.\nTheir school/company is " + formData["company"] + ".\nPostcode: " + formData["userPostCode"] + ".\nPhone: " + formData["userPhone"];
+  console.log("Email message:", emailMessage);
 
   // Creating a transporter object using SMTP transport
   const transporter = nodemailer.createTransport({
@@ -50,9 +52,9 @@ app.post("/submit-form", (req, res) => {
   // Defining the email options
   let mailOptions = {
     from: "noreply.kitlogger@gmail.com",
-    to: "tomkirby314@gmail.com",
+    to: "dofe@scd.herts.sch.uk",
     subject: "Form Submission",
-    text: `Form Data: ${JSON.stringify(formData)}`,
+    text: emailMessage,
   };
 
   // Sending the email
@@ -62,7 +64,7 @@ app.post("/submit-form", (req, res) => {
       return res.status(500).send(error.toString());
     }
     console.log('Email sent:', info.response);
-    res.status(200).send("Email sent: " + info.response);
+    return res.status(200).send("Email sent: " + info.response);
   });
 });
 
