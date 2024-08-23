@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.0.13
+  Software: v0.1.7
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -16,18 +16,8 @@
   You should have received a copy of the GNU General Public License
   along with this program [LICENSE.txt].  If not, see <https://www.gnu.org/licenses/>.
 -->
-  
-<!--
---text: #191909;
---background: #fcf9cf;
---primary: #18e7e0;
---secondary: #a1cea6;
---accent: #82be9a;
--->
-
 <!DOCTYPE html>
 <html lang="en-EN">
-
   <head>
     <title>FAQs - Kit Logger</title>
     <!--Width Scaling and Icon-->
@@ -39,35 +29,24 @@
     <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
-    <script>
-      var root = document.querySelector(":root");
-      var rs = getComputedStyle(root);
-      root.style.setProperty("--index", "#18E7E0");
-      root.style.setProperty("--indexHover", "#36f0ea");
-      root.style.setProperty("--secondary", "#A1CEA6");
-      root.style.setProperty("--accent", "#82BE9A");
-    </script>
   </head>
 
   <nav>
     <!--Navigation Bar-->
     <div class="topnav">
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/hire">
-        <span class="material-symbols-outlined">
-          refresh
-        </span>
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/">
+        <span class="material-symbols-outlined"> refresh </span>
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/login">
-        <span class="material-symbols-outlined" style="text-align: centre;">
+        <span class="material-symbols-outlined" style="text-align: centre">
           login
         </span>
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/contact">
         Contact
       </a>
-      <a
-        class="active"
-        href="https://madscientist-314.github.io/kitloggerwebsite/faqs">
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs"
+        class="active">
         FAQs
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/hire">
@@ -76,14 +55,41 @@
       <a href="https://madscientist-314.github.io/kitloggerwebsite/">
         Home
       </a>
-      <a class="left" href="https://dofe.org">
-        <img
-          alt="DofE Logo"
-          src="https://www.dofe.org/wp-content/uploads/2019/02/DofE-logo-white-minimal_new.svg"
-          width="16"
-          height="16">
-      </a>
+      <div class="horizonal-line"
+        style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
     </div>
+    <div class="dark-mode">
+      <button id="theme-toggle" class="themebutton">
+        <span class="material-symbols-outlined" id="themeIcon"> light_mode
+        </span>
+      </button>
+    </div>
+    <script>
+      var toggle = document.getElementById("theme-toggle");
+
+      var storedTheme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+
+      if (storedTheme)
+        document.documentElement.setAttribute("data-theme", storedTheme);
+
+      toggle.onclick = function () {
+        var currentTheme = document.documentElement.getAttribute("data-theme");
+        var targetTheme = "light";
+        document.getElementById("themeIcon").innerHTML = "dark_mode";
+
+        if (currentTheme === "light") {
+          targetTheme = "dark";
+          document.getElementById("themeIcon").innerHTML = "light_mode";
+        }
+
+        document.documentElement.setAttribute("data-theme", targetTheme);
+        localStorage.setItem("theme", targetTheme);
+      };
+    </script>
   </nav>
 
   <body>
@@ -92,16 +98,16 @@
     <br>
     <br>
     <div class="flex-box">
-      <div class="accent">
-        <h3>When can I start my activities?</h3>
+      <div class="primary">
+        <h5>When can I start my activities?</h5>
         <p>
           From the start of Yr 9 for Bronze; Yr 10 for Silver and then Gold from
           your 16th Birthday
         </p>
       </div>
       <div class="secondary">
-        <h3>Can I do more than one section at a
-          time?</h3>
+        <h5>Can I do more than one section at a
+          time?</h5>
         <p>
           <b>Yes</b>, you can work on sections one at a time or concurrently, or
           stagger your starts to fit into busy schedules.
@@ -116,180 +122,189 @@
         </p>
       </div>
       <div class="accent">
-        <h3>How do I record my activities?</h3>
+        <h5>How do I record my activities?</h5>
         <p>
           Keep a record of the dates you attend either on paper or online e.g.
           word document or excel spreadsheet
-          <br>
+          <br><br>
           Make a note of what you have done at the session just in case
-          <br>
+          <br><br>
           All these can be added as notes or evidence on eDofE
-          <br>
+          <br><br>
           Upload pictures of the activities as supporting evidence. (especially
           if you are cooking, using an app to record runs/ bike ride etc)
-          <br>
-
+          <br><br>
           Do not get your assessor to add a note in your account this will not
           be accepted as an assessors report (see below)
+          <br><br>
+          Watch <a href="https://www.youtube.com/watch?v=-nWLkdahfQ4">this</a>
+          video to help you
+        </p>
+      </div>
+      <div class="primary">
+        <h5>How do I log onto eDofE?</h5>
+        Watch <a
+          href="https://www.youtube.com/watch?v=nvjhV3V3EVA&feature=youtu.be">this</a>
+        video
+      </div><div class="secondary">
+        <h5>When will I get my eDofE account and Welcome pack?</h5>
+        Check your school email address for a welcome email and after 3 weeks
+        of logging in to eDofE for the first time, a Welcome pack should then
+        arrive at your home address in the post! (assuming you put in the
+        correct postcode!)
 
-          Watch this video to help you
+        I'm having trouble logging in for the first time?
 
-          How do I log onto eDofE?
+        Once your parents have made the payment on ParentPay an account will
+        be set up for you using your school email address. Check for a welcome
+        email in here with your username and password. If you cant access your
+        school email please visit the IT team (upstairs in MFL block) to get
+        you set up.
 
-          Watch this video
+        Who can I use for my assessor?
 
-          When will I get my eDofE account and Welcome pack?
+        Anyone over 18, who is not related to you AND has an area of interest
+        or expertise
 
-          Check your school email address for a welcome email and after 3 weeks
-          of logging in to eDofE for the first time, a Welcome pack should then
-          arrive at your home address in the post! (assuming you put in the
-          correct postcode!)
+        e.g. Physical section -PE teacher, Volunteering - the person you are
+        helping but not a relative
 
-          I'm having trouble logging in for the first time?
+        Teachers and Form tutors are always happy to help be assessors -
+        Please ask them BEFORE you start
 
-          Once your parents have made the payment on ParentPay an account will
-          be set up for you using your school email address. Check for a welcome
-          email in here with your username and password. If you cant access your
-          school email please visit the IT team (upstairs in MFL block) to get
-          you set up.
+        If in doubt check with a DofE Leader
 
-          Who can I use for my assessor?
+        What can I do for the Volunteering, Physical or Skills section?
 
-          Anyone over 18, who is not related to you AND has an area of interest
-          or expertise
+        Go to the DofE website for ideas
 
-          e.g. Physical section -PE teacher, Volunteering - the person you are
-          helping but not a relative
+        Or have a look at the following:
 
-          Teachers and Form tutors are always happy to help be assessors -
-          Please ask them BEFORE you start
+        Volunteering
 
-          If in doubt check with a DofE Leader
+        Physical
 
-          What can I do for the Volunteering, Physical or Skills section?
+        Skill
 
-          Go to the DofE website for ideas
+        I don't know my assessor's email or phone number?
 
-          Or have a look at the following:
+        This is a non-compulsory field so submit sections for approval with
+        those fields empty
 
-          Volunteering
+        How do I get my assessor to submit an assessors report?
 
-          Physical
+        Ask them to go to the Assessor Portal
 
-          Skill
+        Give them your eDofE ID number - this can be found on the top left
+        hand side when you log into eDofE
 
-          I don't know my assessor's email or phone number?
+        Share with them the following "How to " guidance document and
+        "what a report should consist of" document.
 
-          This is a non-compulsory field so submit sections for approval with
-          those fields empty
+        How many in an expedition group?
 
-          How do I get my assessor to submit an assessors report?
+        Group sizes of 7.
 
-          Ask them to go to the Assessor Portal
+        The aim is for students to get themselves into either a group of 3 or
+        a group of 4.
 
-          Give them your eDofE ID number - this can be found on the top left
-          hand side when you log into eDofE
+        We will then put a group 3 and a group of 4 together to make up a
+        group of 7.
 
-          Share with them the following "How to " guidance document and
-          "what a report should consist of" document.
+        (Sometimes groups of 5 and 6 will be made but when we have large
+        numbers at Bronze and Silver we try to minimise the number of groups.)
 
-          How many in an expedition group?
+        When is my expedition?
 
-          Group sizes of 7.
+        Check out the dates on the expedition page or calendar
 
-          The aim is for students to get themselves into either a group of 3 or
-          a group of 4.
+        Why hasn’t my activity been approved?
 
-          We will then put a group 3 and a group of 4 together to make up a
-          group of 7.
+        Leaders are all volunteers it may take them some time to log on and
+        check give it a couple of weeks - in the meantime check the
+        notifications on eDofE – if a section or piece of evidence has been
+        queried you will have a message from the person who queried it with a
+        reason.
 
-          (Sometimes groups of 5 and 6 will be made but when we have large
-          numbers at Bronze and Silver we try to minimise the number of groups.)
+        The usual reasons are:
 
-          When is my expedition?
+        Time commitment not 1 hour per week for 13 weeks (3 months)
 
-          Check out the dates on the expedition page or calendar
+        Time commitment not 1 hour per week for 26 weeks (6 months)
 
-          Why hasn’t my activity been approved?
+        Time commitment not 1 hour per week for 52 weeks (12 months)
 
-          Leaders are all volunteers it may take them some time to log on and
-          check give it a couple of weeks - in the meantime check the
-          notifications on eDofE – if a section or piece of evidence has been
-          queried you will have a message from the person who queried it with a
-          reason.
+        Time commitment not 1 hour per week for 78 weeks (18 months)
 
-          The usual reasons are:
+        Assessor is related to you
 
-          Time commitment not 1 hour per week for 13 weeks (3 months)
+        The activity chosen doesn't meet the requirements for tat section e.g.
+        a sport in the skill section or working for a company in the
+        volunteering section
 
-          Time commitment not 1 hour per week for 26 weeks (6 months)
+        The assessor hasn’t written about what you achieved
 
-          Time commitment not 1 hour per week for 52 weeks (12 months)
+        The name of the assessor doesn’t match the name on your plan – in this
+        case please revert to draft amend the plan and resubmit
 
-          Time commitment not 1 hour per week for 78 weeks (18 months)
+        The assessor report has been uploaded incorrectly
 
-          Assessor is related to you
+        The assessors reports must be written on the record book sent home,
+        photographed with ALL details completed OR
 
-          The activity chosen doesn't meet the requirements for tat section e.g.
-          a sport in the skill section or working for a company in the
-          volunteering section
+        The assessor goes to www.edofe.org/assessor and uses your eDofE ID to
+        register your report
 
-          The assessor hasn’t written about what you achieved
+        What equipment do I need for expedition?
 
-          The name of the assessor doesn’t match the name on your plan – in this
-          case please revert to draft amend the plan and resubmit
+        Kit list can be found here
 
-          The assessor report has been uploaded incorrectly
+        How do I set up and link an OS maps account to eDofE.
 
-          The assessors reports must be written on the record book sent home,
-          photographed with ALL details completed OR
+        Please read through the set up guide here.
 
-          The assessor goes to www.edofe.org/assessor and uses your eDofE ID to
-          register your report
+        Watch the video of how to plan a route here.
 
-          What equipment do I need for expedition?
+        Full list of DofE Video's can be found here.
 
-          Kit list can be found here
+        DofE website
 
-          How do I set up and link an OS maps account to eDofE.
+        How do I know which sections have been approved?
 
-          Please read through the set up guide here.
+        You can now see your achievements on eDofE. Please log on and go to
+        the tab "My achievements" and it ill show you hat sectional
+        certificates you have and whether you have completed your hole award.
+        If you click on completed certificates you also have the option to
+        download and print a copy of the certificate.</p>
+    </body>
 
-          Watch the video of how to plan a route here.
-
-          Full list of DofE Video's can be found here.
-
-          DofE website
-
-          How do I know which sections have been approved?
-
-          You can now see your achievements on eDofE. Please log on and go to
-          the tab "My achievements" and it ill show you hat sectional
-          certificates you have and whether you have completed your hole award.
-          If you click on completed certificates you also have the option to
-          download and print a copy of the certificate.</p>
-      </body>
-
-      <footer>
-        <div class="footer">
-          <p class="footer">
-            St Clement Danes School<br /><br />
-            <a
-              class="button"
-              href="https://www.stclementdanes.org.uk"
-              target="_blank"
-              rel="noopener noreferrer">Website</a>
-            <a
-              class="button"
-              href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw"
-              target="_blank"
-              rel="noopener noreferrer">Follow @SCDDofE</a>
-            <script
-              async
-              src="https://platform.twitter.com/widgets.js"
-              charset="utf-8"></script>
-            <!--https://publish.twitter.com/#-->
-          </p>
-        </div>
-      </footer>
-    </html>
+    <footer>
+      <br /><br /><br /><br /><br />
+      <div class="footer">
+        <!--Footer-->
+        <p style="color: #f5f5f1">
+          St Clement Danes School<br /><br />
+          <a
+            class="button"
+            href="https://www.stclementdanes.org.uk"
+            target="_blank"
+            rel="noopener noreferrer">Website
+          </a>
+          <a
+            class="button"
+            href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw"
+            target="_blank"
+            rel="noopener noreferrer">Follow @SCDDofE
+          </a>
+          <script async src="https://platform.twitter.com/widgets.js"></script>
+          <!--https://publish.twitter.com/#-->
+          <br /><br />
+          Published under the GNU General Public
+          <a
+            class="link"
+            href="https://madscientist-314.github.io/kitloggerwebsite/licence.html">
+            Licence </a><br />
+        </p>
+      </div>
+    </footer>
+  </html>
