@@ -40,7 +40,7 @@
 }
 */
 
-:root{
+:root {
   --text: #1b1b09;
   --background: #fcf9cf;
 
@@ -48,7 +48,7 @@
   --secondary: #a1cea7;
   --accent: #82bf9b;
 
-  --white: #ffffff;
+  --white: #f5f5f1;
   --black: #1c1c1c;
   --grey: #808080;
   --schBlue: #00244b;
@@ -64,15 +64,15 @@
 }
 
 html[data-theme="dark"] {
-  --text: #F6F6E4;
+  --text: #f6f6e4;
   --background: #151515;
 
-  --primary: #18E7E0;
-  --secondary: #315E37;
-  --accent: #407D5B;
+  --primary: #18e7e0;
+  --secondary: #315e37;
+  --accent: #407d5b;
 
   --white: #1c1c1c;
-  --black: #ffffff;
+  --black: #f5f5f1;
   --darkGrey: #a2a2a2;
   --lightGrey: #333333;
 }
@@ -94,7 +94,26 @@ html[data-theme="dark"] {
   font-weight: normal;
   font-style: italic;
 }
+/*
+@media screen and (max-width: 3000px) {
+  html{
+    zoom: 120%;
+  }
+}
 
+@media screen and (max-width: 1920px){
+  html{
+    zoom: 100%;
+  }
+}
+
+@media screen and (max-width: 900px){
+  html{
+    zoom: 125%;
+  }
+}
+
+/* https://stackoverflow.com/questions/27908509/zoom-website-depending-on-monitor-resolution */
 body {
   font-family: var(--font);
   color: var(--text);
@@ -130,7 +149,6 @@ body {
   transition-duration: 300ms;
 }
 
-
 .material-symbols-outlined {
   /* Nav Bar Icons */
   /* https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web */
@@ -145,7 +163,7 @@ body {
   margin: 0px;
   text-align: center;
   font-size: 12px;
-  color: #fff;
+  color: #f5f5f1;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -155,7 +173,7 @@ body {
 }
 
 .footer a.button {
-  color: #fff;
+  color: #f5f5f1;
   background-color: var(--schGreen);
   text-align: center;
   padding: 1%, 0.5%;
@@ -170,7 +188,7 @@ body {
   background-color: var(--schGreenHover);
 }
 .footer a.link {
-  color: var(--white);
+  color: #f5f5f1;
 }
 
 /* Dark Mode Button */
@@ -179,8 +197,8 @@ body {
   color: var(--white);
   border: none;
   border-radius: 5px;
-  float: right; 
-  padding: 2px; 
+  float: right;
+  padding: 2px;
   margin: 2px;
 }
 
@@ -258,6 +276,13 @@ td {
 
 script {
   display: none;
+}
+
+.horizonal-line {
+  width: 100%;
+  height: 0.3em;
+  margin: auto;
+  background-color: var(--secondary);
 }
 
 /*Interactions*/
@@ -438,4 +463,3 @@ textarea {
 .col {
   columns: 2;
 }
-
