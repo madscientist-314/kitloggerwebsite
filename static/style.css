@@ -20,7 +20,7 @@
 :root {
   --index: #02269e;
   --indexHover: #1239ba;
-  --secondary:#8ce4fabb;
+  --secondary: #8ce4fabb;
   --accent: #3257f9bb;
   --white: #ffffff;
   --black: #1c1c1c;
@@ -89,16 +89,12 @@ body {
   font-family: var(--font);
 }
 
-span.material-symbols-outlined {
+.material-symbols-outlined {
   /* Nav Bar Icons */
   /* https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web */
   vertical-align: inherit;
-  font-size: 22px;
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 18
+  font-size: 18px;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 18;
 }
 
 .topnav.container {
@@ -138,11 +134,11 @@ span.material-symbols-outlined {
   left: 0;
   justify-content: stretch;
   width: 100%;
-  height: 95px;
+  height: 9em;
 }
 
 .footer a.button {
-  color: #ffffff;
+  color: #fff;
   background-color: var(--schGreen);
   text-align: center;
   padding: 1%, 0.5%;
@@ -278,7 +274,7 @@ form.hire > ul {
   margin: 0;
 }
 
-form.hire > ul > li{
+form.hire > ul > li {
   margin: 3px;
 }
 
@@ -328,7 +324,7 @@ textarea {
 .flex-box {
   display: flex;
   margin: auto;
-  max-width: 80em;
+  max-width: 800px;
   width: 95%;
   flex-direction: row;
   justify-content: space-evenly;
@@ -354,11 +350,11 @@ textarea {
   color: var(--black);
 }
 
-.flex-box > div.warning{
+.flex-box > div.warning {
   border: 1px solid var(--warning);
   font-family: var(--font);
   color: var(--black);
-  max-width: 500px;
+  max-width: 480px;
   height: auto;
   padding: 6px;
   margin: 3px;
@@ -401,5 +397,3 @@ textarea {
 .col {
   columns: 2;
 }
-
-
