@@ -107,12 +107,6 @@ html[data-theme="dark"] {
   }
 }
 
-@media screen and (max-width: 900px){
-  html{
-    zoom: 125%;
-  }
-}
-
 /* https://stackoverflow.com/questions/27908509/zoom-website-depending-on-monitor-resolution */
 body {
   font-family: var(--font);
