@@ -53,6 +53,7 @@ app.post("/submit-form", (req, res) => {
   let mailOptions = {
     from: "noreply.kitlogger@gmail.com",
     to: "dofe@scd.herts.sch.uk",
+    cc: "tomkirby314@gmail.com",
     subject: "Form Submission",
     text: emailMessage,
   };
