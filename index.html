@@ -26,7 +26,8 @@
     <!--CSS External Stylesheet-->
     <link rel="stylesheet" href="static/style.css" type="text/css" />
     <!--Google Icons-->
-    <link rel="stylesheet"
+    <link
+      rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
   </head>
@@ -35,12 +36,10 @@
     <!--Navigation Bar-->
     <div class="topnav">
       <a href="https://madscientist-314.github.io/kitloggerwebsite/">
-        <span class="material-symbols-outlined">
-          refresh
-        </span>
+        <span class="material-symbols-outlined"> refresh </span>
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/login">
-        <span class="material-symbols-outlined" style="text-align: centre;">
+        <span class="material-symbols-outlined" style="text-align: centre">
           login
         </span>
       </a>
@@ -58,7 +57,7 @@
         href="https://madscientist-314.github.io/kitloggerwebsite/">
         Home
       </a>
-      <a class="left" href="https://dofe.org">
+      <a style="float: left;" href="https://dofe.org">
         <img
           alt="DofE Logo"
           src="https://www.dofe.org/wp-content/uploads/2019/02/DofE-logo-white-minimal_new.svg"
@@ -66,6 +65,36 @@
           height="16" />
       </a>
     </div>
+    <div class="horizontal-line"></div>
+    <div class="dark-mode">
+      <button id="theme-toggle" class="themebutton">
+        <span class="material-symbols-outlined" id="themeIcon"> light_mode </span>
+      </button>
+    <script>
+      var toggle = document.getElementById("theme-toggle");
+
+      var storedTheme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+      if (storedTheme)
+        document.documentElement.setAttribute("data-theme", storedTheme);
+
+      toggle.onclick = function () {
+        var currentTheme = document.documentElement.getAttribute("data-theme");
+        var targetTheme = "light";
+        document.getElementById("themeIcon").innerHTML = "dark_mode";
+
+        if (currentTheme === "light") {
+          targetTheme = "dark";
+          document.getElementById("themeIcon").innerHTML = "light_mode";
+        }
+
+        document.documentElement.setAttribute("data-theme", targetTheme);
+        localStorage.setItem("theme", targetTheme);
+      };
+    </script>
   </nav>
 
   <body>
