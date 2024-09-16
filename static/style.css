@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.1.7
+  Software: v0.1.8
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -84,10 +84,20 @@ html[data-theme="dark"] {
   }
 }
 
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)}
+  to {-webkit-transform: scale(1)}
+}
+
+@keyframes animatezoom {
+  from {transform: scale(0)}
+  to {transform: scale(1)}
+}
 /* https://stackoverflow.com/questions/27908509/zoom-website-depending-on-monitor-resolution */
 
+
+/* Navigation Bar */
 .topnav {
-  /* Navigation Bar */
   overflow: hidden;
   color: var(--text);
   padding: 0px;
@@ -111,12 +121,13 @@ html[data-theme="dark"] {
   font-family: var(--font);
 }
 
-.topnav a:hover {
+.topnav a:hover, button.login-button:hover {
   opacity: 1;
   color: var(--black);
   border-bottom: 3px solid var(--primary);
   transition-duration: 300ms;
   transition: border-bottom 100ms;
+  cursor: pointer;
 }
 
 .topnav a.active {
@@ -132,6 +143,23 @@ html[data-theme="dark"] {
   font-size: 18px;
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 18;
 }
+
+.psw {
+  /* Password Reset */
+  color: var(--text);
+  text-align: center;
+  padding: 8px;
+  text-decoration: none;
+  font-size: 10px;
+  font-family: var(--font);
+  width: 100%;
+  margin: auto;
+}
+
+.psw:hover {
+  color: var(--grey);
+}
+
 
 /* Footer */
 .footer {
@@ -162,10 +190,13 @@ html[data-theme="dark"] {
 
 .footer a.button:hover {
   background-color: var(--schGreenHover);
+  cursor: pointer;
 }
+
 .footer a.link {
   color: #f5f5f1;
 }
+
 
 /* Dark Mode Button */
 .dark-mode {
@@ -189,7 +220,9 @@ html[data-theme="dark"] {
 .dark-mode:hover {
   opacity: 0.6;
   transition-duration: 300ms;
+  cursor: pointer;
 }
+
 
 /* Page Contents */
 body {
@@ -254,6 +287,8 @@ script {
   display: none;
 }
 
+
+/* Decorations */
 .horizonal-line {
   width: 100%;
   height: 0.3em;
@@ -261,10 +296,11 @@ script {
   background-color: var(--accent);
 }
 
-/*Interactions*/
+
+/*Buttons*/
 .button {
   color: var(--white);
-  background-color: var(--index);
+  background-color: var(--background);
   text-align: center;
   padding: 5px 10px;
   text-decoration: none;
@@ -274,24 +310,95 @@ script {
   transition-duration: 0.3s;
 }
 
-button.hire {
-  color: var(--white);
-  background-color: var(--index);
-  text-align: center;
+button.login-form,
+button.hire,
+button.login-button  {
+  color: var(--text);
+  background-color: var(--secondary);
+  border: none;
   padding: 5px 10px;
+  text-align: center;
   text-decoration: none;
   font-family: var(--font);
   border-radius: 15px;
   font-size: 14px;
   transition-duration: 0.3s;
-  margin: 0 auto;
+  margin: auto;
+}
+
+button.login-button {
+  float: right;
+  opacity: .8;
+  vertical-align: middle;
+  background-color: var(--background);
+  padding: 6px;
+  font-size: 21px;
+  border-radius: 0px;
+}
+
+button.hire {
   width: 100%;
 }
 
 button.hire:hover {
-  background-color: var(--indexHover);
+  background-color: var(--accent);
 }
 
+button.login-form {
+  width: 46%;
+  margin: 5px;
+}
+
+
+/* Login Modal Form */
+.login-form-icon {
+  vertical-align: middle;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #00000000; /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: var(--background);
+  margin: 5px auto; /* 15% from the top and centered */
+  border: 1px solid var(--accent);
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+  /* Position it in the top right corner outside of the modal */
+  position: absolute;
+  right: 50px;
+  top: 1.5em;
+  margin: auto;
+  color: var(--black);
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--warning);
+  cursor: pointer;
+}
+
+.animate {
+  -webkit-animation: animatezoom 0.3s;
+  animation: animatezoom 0.3s
+}
+
+
+/* Links */
 a.embed {
   color: var(--index);
   font-weight: 600;
@@ -301,6 +408,8 @@ a.redirect {
   color: var(--index);
 }
 
+
+/* Forms */
 form.hire {
   margin: auto;
   width: 98%;
@@ -326,6 +435,13 @@ label {
   text-align: right;
 }
 
+input.checkbox {
+  display: inline-block;
+  max-width: 10px;
+
+  padding: 5px;
+}
+
 input.date {
   font: var(--font);
   width: 25.6%;
@@ -344,7 +460,7 @@ textarea:valid {
 input:invalid,
 input.date:invalid,
 textarea:invalid {
-  border: 1px solid red;
+  border: 1px solid var(--warning);
 }
 
 input,
@@ -361,6 +477,7 @@ textarea {
   vertical-align: top;
   height: 7em;
 }
+
 
 /* FlexBoxes */
 .flex-box {
