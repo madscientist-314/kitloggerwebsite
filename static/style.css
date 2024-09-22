@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.1.8
+  Software: v0.1.9q
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -373,7 +373,7 @@ button.login-form {
 .modal-content {
   background-color: var(--background);
   margin: 5px auto; /* 5px from the top and centered */
-  border: 1px solid var(--accent);
+  border: 3px solid var(--accent);
   max-width: 800px;
   min-width: 300px;
   width: 80%; /* Could be more or less, depending on screen size */
