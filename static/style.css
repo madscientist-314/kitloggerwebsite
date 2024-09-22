@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.1.9q
+  Software: v0.2.0
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -147,13 +147,8 @@ html[data-theme="dark"] {
 .psw {
   /* Password Reset */
   color: var(--text);
-  text-align: center;
-  padding: 8px;
   text-decoration: none;
   font-size: 10px;
-  font-family: var(--font);
-  width: 100%;
-  margin: auto;
 }
 
 .psw:hover {
@@ -358,7 +353,7 @@ button.login-form {
 
 .modal {
   display: none; /* Hidden by default */
-  position: absolute; /* Stay in place */
+  position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
@@ -366,7 +361,7 @@ button.login-form {
   background-color: #00000000; /* Black w/ opacity */
   padding-top: 60px;
   height: 100%;
-  margin: auto;
+  width: 100%;
 
 }
 
@@ -437,6 +432,14 @@ label {
   display: inline-block;
   width: 20%;
   text-align: right;
+}
+
+.free {
+  display: inline-block;
+  width: 90%;
+  text-align: left;
+  margin-left: 5px;
+  font-size: 12px;
 }
 
 input.checkbox {

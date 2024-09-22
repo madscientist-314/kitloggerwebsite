@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.0.14
+  Software: v0.2.0
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -22,6 +22,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
+const mssql = require("mssql");
 
 const app = express();
 const port = 3000;
@@ -71,4 +72,25 @@ app.post("/submit-form", (req, res) => {
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
+});
+
+app.get("/get-kit", (req, res) => {
+  const config = {
+    user: "SA",
+    password: "Password123",
+    server: "localhost",
+    database: "KitLogger",
+  };
+
+  mssql.connect(config, function (err) {
+
+    let request = new mssql.Request();
+
+    request.query("SELECT * FROM Kit",
+      function (err, recordset) {
+        if (err) console.log(err);
+
+        res.send(recordset);
+      });
+  });
 });

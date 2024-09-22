@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.1.8
+  Software: v0.2.0
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -98,9 +98,9 @@
   <body>
     <!-- Modal Login Popup -->
     <div id="login" class="modal">
-
       <!-- Modal Content -->
       <form class="modal-content animate" id="login-form">
+
         <div class="container">
           <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div></span>
           <label for="uname"><b>Username</b></label>
@@ -111,17 +111,15 @@
           <input type="password" placeholder="Enter Password" name="psw"
             required>*
 
-          <label for="checkbox" style="width: 120px;">Remember me</label>
+          <label for="checkbox" style="width: 120px;" class="free">Remember me</label>
           <input type="checkbox" checked="checked" name="remember"
             class="checkbox">
-          <br><span><a href="#" class="psw">Forgot password?</a></span><br>
-
-          <button type="submit" class="login-form"
-            style="float: left;">Login</button>
+          <br><label class="free"><a href="#" class="psw">Forgot password?</a></label><br>
+          <button type="submit" class="login-form" style="float: left;">Login</button>
           <button type="button"
             onclick="document.getElementById('login').style.display='none'"
             class="login-form" style="float: right;">Cancel</button>
-          <br> <br>
+            <br><br>
         </div>
       </form>
       <script>
@@ -150,6 +148,7 @@
         });
       </script>
     </div>
+
     <!--Main Content-->
     <h1>Kit Logger</h1>
     <sub>A DofE Kit Management System</sub>
