@@ -17,6 +17,19 @@
   You should have received a copy of the GNU General Public License
   along with this program [LICENSE.txt].  If not, see <https://www.gnu.org/licenses/>.
 */
+// Functions
+function getKitDataByID(records) {
+  records.recordset.forEach(function (record) {
+    console.log(record);
+  });
+  console.log(records.recordset[0].length);
+}
+
+const formData = [
+  ["SCD-ST-L35", "Missing", "Stoves", "Trangia", "Trangia 25-1/UL", "Silver", "L", 0, 0, 0, '2018-08-01', '121.56', "Trangia", '2024-01-10', '2021-01-10', 10, '2000-01-01', 0, ""],
+  ["SCD-ST-L36", "Available", "Stoves", "Trangia", "Trangia 25-2/UL", "Silver", "M", 0, 0, 0, '2019-08-01', '130.00', "Trangia", '2025-01-10', '2022-01-10', 10, '2001-01-01', 0, ""]
+];
+
 // Importing required modules
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -88,15 +101,50 @@ app.get("/", (req, res) => {
     }
   };
 
-  console.log("Database connection details: ", config);
+  //console.log("Database connection details: ", config);
 
   mssql.connect(config, function (err) {
     if (err) {
       console.error('Database connection error:', err);
       return res.status(500).send('Database connection error');
     }
+    
+    const request = new mssql.Request()
 
-    let request = new mssql.Request();
+    //request.query("CREATE TABLE login(user_id INT INDENTITY(1,1) PRIMARY KEY,	username VARCHAR(50), password_hash VARCHAR(50), encrypt_key VARCHAR(50), exped_level VARCHAR(6), loan_paid BIT, no_of_loaned_items INT);", function (err, success) {});
+    //request.query("CREATE TABLE kit_hire(user_id INT PRIMARY KEY, loan_start_date DATE, loan_end_date DATE, loan_name VARCHAR(50), loan_email VARCHAR(70), loan_paid BIT, rental_value VARCHAR(10), kit_id1 INT, kit_id2 INT, kit_id3 INT, kit_id4 INT, kit_id5 INT);", function (err, success) {});
+
+
+
+    function writeKitData(request, writeQuery) {
+      var query = `
+        INSERT INTO kit_data(
+          contents_of_qr_code, status, category, manufacturer, attribute_brand, 
+          attribute_color, attribute_size, is_a_set, number_in_set, 
+          number_present_in_set, purchased_date, purchased_value, purchased_from, 
+          next_inspection_date, last_inspection_date, working_life_in_years, 
+          retirement_date, on_loan, notes
+        ) VALUES `;
+      
+        for (let i = 0; i < writeQuery.length; i++) {
+          query += `('${writeQuery[i].join("', '")}')`;
+          if (i < writeQuery.length - 1) {
+            query += ', ';
+          }
+        }
+      
+        query += ';';
+        
+      request.batch(query, (err, result) => {
+        if (err) {
+          console.error('Error:', err);
+        } else {
+          console.log('Result:', result);
+        }
+      });
+    }
+
+    writeKitData(request, formData);
 
     request.query("SELECT * FROM kit_data", function (err, recordset) {
       if (err) {
@@ -104,7 +152,11 @@ app.get("/", (req, res) => {
         return res.status(500).send('Query error');
       }
 
-      res.send(recordset);
+      res.send(recordset.recordset);
+      getKitDataByID(recordset);
+      
     });
   });
 });
+
+
