@@ -25,7 +25,7 @@ const cors = require("cors");
 const mssql = require("mssql");
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Middleware to parse JSON and URL-encoded data
 app.use(cors());
@@ -74,23 +74,37 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
 
-app.get("/get-kit", (req, res) => {
+app.get("/", (req, res) => {
   const config = {
-    user: "SA",
-    password: "Password123",
+    user: "VSC",
+    password: "VSC",
     server: "localhost",
-    database: "KitLogger",
+    port: 1434,
+    database: "kitlogger",
+    options: {
+      encrypt: false,
+      enableArithAbort: true,
+      trustServerCertificate: true,
+    }
   };
 
+  console.log("Database connection details: ", config);
+
   mssql.connect(config, function (err) {
+    if (err) {
+      console.error('Database connection error:', err);
+      return res.status(500).send('Database connection error');
+    }
 
     let request = new mssql.Request();
 
-    request.query("SELECT * FROM Kit",
-      function (err, recordset) {
-        if (err) console.log(err);
+    request.query("SELECT * FROM kit_data", function (err, recordset) {
+      if (err) {
+        console.error('Query error:', err);
+        return res.status(500).send('Query error');
+      }
 
-        res.send(recordset);
-      });
+      res.send(recordset);
+    });
   });
 });
