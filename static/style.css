@@ -340,7 +340,8 @@ button.hire {
   width: 100%;
 }
 
-button.hire:hover {
+button.hire:hover,
+button.login-form:hover {
   background-color: var(--accent);
 }
 
@@ -357,21 +358,24 @@ button.login-form {
 
 .modal {
   display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
+  position: absolute; /* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: #00000000; /* Black w/ opacity */
   padding-top: 60px;
+  height: 100%;
+  margin: auto;
+
 }
 
 .modal-content {
   background-color: var(--background);
-  margin: 5px auto; /* 15% from the top and centered */
+  margin: 5px auto; /* 5px from the top and centered */
   border: 1px solid var(--accent);
+  max-width: 800px;
+  min-width: 300px;
   width: 80%; /* Could be more or less, depending on screen size */
 }
 
@@ -437,9 +441,9 @@ label {
 
 input.checkbox {
   display: inline-block;
-  max-width: 10px;
-
-  padding: 5px;
+  max-width: 30px;
+  margin-top: 10px;
+  margin-left: 5px;
 }
 
 input.date {
@@ -537,6 +541,7 @@ textarea {
   max-width: 500px;
   background-color: var(--primary);
 }
+
 /*
 :root{
   --text-50: #fdfde7;

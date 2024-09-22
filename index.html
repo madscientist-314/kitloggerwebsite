@@ -98,21 +98,12 @@
   <body>
     <!-- Modal Login Popup -->
     <div id="login" class="modal">
-      <span onclick="document.getElementById('login').style.display='none'"
-        class="close" title="Close Modal">
-        <span class="material-symbols-outlined">
-          close
-        </span>
-      </span>
 
       <!-- Modal Content -->
       <form class="modal-content animate" id="login-form">
-
         <div class="container">
-          <label for="uname"><b>
-            <div class="material-symbols-outlined">
-            <span class="login-form-icon">person</span>
-          </div>Username</b></label>
+          <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div></span>
+          <label for="uname"><b>Username</b></label>
           <input type="text" placeholder="Enter Username" name="uname"
             required>*
 
@@ -120,15 +111,17 @@
           <input type="password" placeholder="Enter Password" name="psw"
             required>*
 
-          <label for="checkbox">Remember me</label>
+          <label for="checkbox" style="width: 120px;">Remember me</label>
           <input type="checkbox" checked="checked" name="remember"
             class="checkbox">
           <br><span><a href="#" class="psw">Forgot password?</a></span><br>
 
-          <button type="submit" class="login-form" style="float: left;">Login</button>
+          <button type="submit" class="login-form"
+            style="float: left;">Login</button>
           <button type="button"
             onclick="document.getElementById('login').style.display='none'"
             class="login-form" style="float: right;">Cancel</button>
+          <br> <br>
         </div>
       </form>
       <script>
@@ -140,6 +133,7 @@
         window.onclick = function(event) {
           if (event.target == modal) {
             modal.style.display = "none";
+            document.getElementById("login-form").reset();
           }
         }
         const form = document.getElementById("login-form");
@@ -151,6 +145,8 @@
             jsonData[key] = value;
           });
           console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+          
+          event.target.reset();
         });
       </script>
     </div>
