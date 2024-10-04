@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.0
+  Software: v0.2.4
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -295,7 +295,7 @@ script {
 /*Buttons*/
 .button {
   color: var(--white);
-  background-color: var(--background);
+  background-color: var(--black);
   text-align: center;
   padding: 5px 10px;
   text-decoration: none;

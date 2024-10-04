@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.0
+  Software: v0.2.4
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -31,20 +31,37 @@ const formData = [
 ];
 
 // Importing required modules
-const express = require("express");
-const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
-const cors = require("cors");
-const mssql = require("mssql");
+const express = require("express"); // Express module
+const bodyParser = require("body-parser"); // Body parser module
+const nodemailer = require("nodemailer"); // Email module
+const cors = require("cors"); // Cross-origin resource sharing module
+const mssql = require("mssql"); // Database connection module
 
+// Setting up the server
 const app = express();
-const port = 3001;
+const port = 3002;
+
+// Defining the database connection details
+const config = {
+  user: "VSC",
+  password: "VSC",
+  server: "localhost",
+  port: 1434,
+  database: "kitlogger",
+  options: {
+    encrypt: false,
+    enableArithAbort: true,
+    trustServerCertificate: true,
+  }
+};
+
 
 // Middleware to parse JSON and URL-encoded data
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Handle form submissions
 app.post("/submit-form", (req, res) => {
   console.log("Form submission received"); // Log when the form is received
 
@@ -54,6 +71,14 @@ app.post("/submit-form", (req, res) => {
   emailMessage = formData["userName"] + " has requested to hire kit for " + formData["event"] + " from " + formData["startDate"] + " to " + formData["endDate"] + ".\nThey have provided the following details:\n" + formData["userMessage"] + ".\nYou can contact them at " + formData["userEmail"] + " to confirm the hire.\nTheir school/company is " + formData["company"] + ".\nPostcode: " + formData["userPostCode"] + ".\nPhone: " + formData["userPhone"];
   console.log("Email message:", emailMessage);
 
+  // Defining the email options
+  const mailOptions = {
+    from: "noreply.kitlogger@gmail.com",
+    to: "dofe@scd.herts.sch.uk",
+    subject: "Form Submission",
+    text: emailMessage,
+  };
+
   // Creating a transporter object using SMTP transport
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -62,14 +87,6 @@ app.post("/submit-form", (req, res) => {
       pass: 'krwg eyqp qlhq ioln', // Email account app password
     },
   });
-
-  // Defining the email options
-  let mailOptions = {
-    from: "noreply.kitlogger@gmail.com",
-    to: "dofe@scd.herts.sch.uk",
-    subject: "Form Submission",
-    text: emailMessage,
-  };
 
   // Sending the email
   transporter.sendMail(mailOptions, (error, info) => {
@@ -82,26 +99,28 @@ app.post("/submit-form", (req, res) => {
   });
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+// Handle fetching data from the database
+app.get("/fetch-data", (req, res) => {
+  mssql.connect(config); // Connect to the database
+  const request = new mssql.Request(); // Create a new request object
+
+  request.query("SELECT * FROM kit_data ORDER BY category DESC, id ASC", function (err, recordset) { // Query the database
+    if (err) { // Handle query errors
+      console.error('Query error:', err);
+      return res.status(500).send('Query error'); // Send an error response
+    }
+
+    console.log("Kit data:", recordset.recordset[0]); // Log the records
+    res.send(recordset.recordset); // Send the recordset to the client
+    getKitDataByID(recordset); // Call the function to log the records
+    //writeKitData(request, formData);
+  });
 });
 
+/*
+// Handle database connections
 app.get("/", (req, res) => {
-  const config = {
-    user: "VSC",
-    password: "VSC",
-    server: "localhost",
-    port: 1434,
-    database: "kitlogger",
-    options: {
-      encrypt: false,
-      enableArithAbort: true,
-      trustServerCertificate: true,
-    }
-  };
-
-  //console.log("Database connection details: ", config);
+  console.log("Database connection details: ", config);
 
   mssql.connect(config, function (err) {
     if (err) {
@@ -113,9 +132,7 @@ app.get("/", (req, res) => {
 
     //request.query("CREATE TABLE login(user_id INT IDENTITY(1,1) PRIMARY KEY,	username VARCHAR(50), password_hash VARCHAR(50), encrypt_key VARCHAR(50), exped_level VARCHAR(6), loan_paid BIT, no_of_loaned_items INT);", function (err, success) {});
     //request.query("CREATE TABLE kit_hire(user_id INT PRIMARY KEY, loan_start_date DATE, loan_end_date DATE, loan_name VARCHAR(50), loan_email VARCHAR(70), loan_paid BIT, rental_value VARCHAR(10), kit_id1 INT, kit_id2 INT, kit_id3 INT, kit_id4 INT, kit_id5 INT);", function (err, success) {});
-
-
-
+*/
     function writeKitData(request, writeQuery) {
       var query = `
         INSERT INTO kit_data(
@@ -144,19 +161,74 @@ app.get("/", (req, res) => {
       });
     }
 
-    writeKitData(request, formData);
+    
+/*
+    function getKitData(request) {
+      request.query("SELECT * FROM kit_data", function (err, recordset) {
+        if (err) {
+          console.error('Query error:', err);
+          return res.status(500).send('Query error');
+        }
 
-    request.query("SELECT * FROM kit_data", function (err, recordset) {
-      if (err) {
-        console.error('Query error:', err);
-        return res.status(500).send('Query error');
-      }
+        res.send(recordset.recordset);
+        getKitDataByID(recordset);
+        
+      });
+    }
 
-      res.send(recordset.recordset);
-      getKitDataByID(recordset);
-      
-    });
+    function checkLoginData(request, username, password) {
+      request.query("SELECT * FROM login", function (err, recordset) {
+        if (err) {
+          console.error('Query error:', err);
+          return res.status(500).send('Query error');
+        }      
+
+        const loginData = recordset.recordset;
+        for (let i = 0; i < loginData.length; i++) {
+          if (loginData[i].username === username && loginData[i].password_hash === password) {
+            console.log("Login successful");
+            console.log("User ID:", loginData[i].uid);
+            request.query("SELECT * FROM kit_hire WHERE user_id = " + loginData[i].uid, function (err, recordset) {
+              if (err) {
+                console.error('Query error:', err);
+                return res.status(500).send('Query error');
+              }
+              //data = recordset.recordset[0].loan_start_date;
+              console.log("Kit hire data:", recordset.recordset[0]);
+            });
+            return "Login successful";
+          }
+        }
+        console.log("Login failed");
+      });
+    }
+    
+    const username = "rfaughny2";
+    const password = "$2a$04$hYFCtwlw8MLiSqMl.JaMSeZbCgI6jZqPPSzb2wDHeU8Xo/GLz.z0u";
+    console.log(checkLoginData(request, username, password));
   });
+}); */
+
+// Handle login form submissions
+app.post("/submit-login-form", (req, res) => {
+  console.log("Form submission received"); // Log when the form is received
+
+  const loginFormData = req.body;
+  console.log("Form data:", loginFormData); // Log the form data
+
+  const username = loginFormData["uname"];
+  const password = loginFormData["psw"];
+  const remember = loginFormData["remember"];
+  console.log("Username:", username);
+  console.log("Password:", password);
+  if (remember==="on") {
+    console.log("Remember me: true");
+  } else {
+    console.log("Remember me: false");
+  }
 });
 
-
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
+});

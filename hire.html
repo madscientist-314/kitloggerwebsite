@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.3
+  Software: v0.2.4
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -131,6 +131,7 @@
           document.getElementById("login-form").reset();
         }
       }
+      // Get the form
       const form = document.getElementById("login-form");
       form.addEventListener("submit", function (event) { // when the form is submitted
         event.preventDefault(); // stop the form from submitting using html
@@ -140,6 +141,27 @@
           jsonData[key] = value;
         });
         console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+
+        const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
+        xhrLogin.open("POST", "http://localhost:3002/submit-login-form"); // open a new request
+        xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
+        xhrLogin.onload = function () { // when the request is loaded
+          console.log("Response received:", xhrLogin.responseText); // Log the response from the server
+          if (xhrLogin.status === 200) { // if the request is successful
+            const button = document.getElementById("externalHireSubmit").innerHTML = "Submitted"; // change the button text
+            setTimeout(function () { // after 3 seconds
+              button.innerHTML = "Submit"; // change the button text back
+            }, 3000);
+          } else {
+            console.error('Error:', xhrLogin.responseText); // Log the error response
+            document.getElementById("error messages").style.display = "block"; // show the error message
+          }
+        };
+        xhrLogin.onerror = function () {
+          console.error('Request failed'); // Log if the request fails
+          document.getElementById("error messages").style.display = "block"; // show the error message
+        };
+        xhrLogin.send(JSON.stringify(jsonData)); // send the request with the form data as JSON
 
         event.target.reset();
       });
@@ -224,7 +246,7 @@
         console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhr = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhr.open("POST", "http://localhost:3000/submit-form"); // open a new request
+        xhr.open("POST", "http://localhost:3002/submit-form"); // open a new request
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onload = function () { // when the request is loaded
           console.log("Response received:", xhr.responseText); // Log the response from the server

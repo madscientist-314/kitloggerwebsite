@@ -2,5 +2,22 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[html]": {
       "editor.defaultFormatter": "mohd-akram.vscode-html-format"
-    }
+    },
+    "sqltools.connections": [
+      {
+        "mssqlOptions": {
+          "appName": "SQLTools",
+          "useUTC": true,
+          "encrypt": false
+        },
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 1434,
+        "driver": "MSSQL",
+        "name": "Kit Logger",
+        "database": "kitlogger",
+        "username": "VSC",
+        "password": "VSC"
+      }
+    ]
   }
