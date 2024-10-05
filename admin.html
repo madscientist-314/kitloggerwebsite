@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.4
+  Software: v0.2.5
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -92,17 +92,19 @@
     <h1>Kit Logger</h1>
     <sub>Overview</sub><br><br>
     <button id="fetchDataButton" class="button">Fetch Data</button>
-  <div id="dataContainer"></div>
+    <input type="text" id="searchBox" placeholder="Search by ID.." class="searchBar">
+    <button class="searchBarSubmit" id="searchSubmit">Search</button>
+  <div id="dataContainer" class="tableContainer"></div>
 
   <script>
     document.getElementById('fetchDataButton').addEventListener('click', function() {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'http://localhost:3002/fetch-data', true);
+      xhr.open('GET', 'http://localhost:3003/fetch-data', true);
       xhr.onload = function() {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
           console.log('Data received:', data);
-          displayData(data);
+          formatData(data);
         } else {
           console.error('Error fetching data:', xhr.responseText);
         }
@@ -113,21 +115,86 @@
       xhr.send();
     });
 
-    function displayData(data) {
-      const dataContainer = document.getElementById('dataContainer');
-      dataContainer.innerHTML = '';
-      data.forEach(item => {
-        const div = document.createElement('div');
-        div.textContent = JSON.stringify(item);
-        dataContainer.appendChild(div);
-      });
+    // Format date in dd/mm/yyyy format
+    function formatDate(DateString) {
+      const date = new Date(DateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     }
 
+    // Format data into a table
     function formatData(data) {
-      data.forEach(item => {
-        
+      const dataContainer = document.getElementById('dataContainer');
+      dataContainer.innerHTML = '';
+
+      // Display message if no data available
+      if (data.length === 0) {
+        dataContainer.textContent = 'No data available';
+        document.getElementById('fetchDataButton').innerHTML = 'Fetch Data';
+        return;
+      }
+
+      const button = document.getElementById('fetchDataButton');
+      button.innerHTML = 'Refresh Data';
+
+      const table = document.createElement('table');
+      table.setAttribute('class', 'table');
+      const thead = document.createElement('thead');
+      thead.setAttribute('class', 'thead');
+      const tbody = document.createElement('tbody');
+      tbody.setAttribute('class', 'tbody');
+
+      // Create table headers
+      const headers = Object.keys(data[0]);
+      const headerRow = document.createElement('tr');
+      headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
       });
+      thead.appendChild(headerRow);
+
+      // Create table rows
+      data.forEach(item => {
+        const row = document.createElement('tr');
+        headers.forEach(header => {
+          const td = document.createElement('td');
+          if (header.toLowerCase().includes('date')) {
+            td.textContent = formatDate(item[header]);
+          } else {
+            td.textContent = item[header];
+          }
+          row.appendChild(td);
+        });
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      dataContainer.appendChild(table);
     }
+
+    document.getElementById('searchSubmit').addEventListener('click', function() {
+      var searchRequest = document.getElementById('searchBox').value;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}`, true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          console.log('Data received:', data);
+          formatData(data); 
+        } else {
+          console.error('Error fetching data:', xhr.responseText);
+        }
+      };
+      xhr.onerror = function() {
+        console.error('Request failed');
+      };
+      xhr.send();
+
+    });
   </script>
   </body>
 

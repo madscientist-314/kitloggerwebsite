@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.4
+  Software: v0.2.5
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -291,18 +291,50 @@ script {
   background-color: var(--accent);
 }
 
+.searchBar {
+  width: 50%;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: var(--background);
+  border: 1px solid var(--accent);
+  height: 28px;
+  color: var(--text);
+}
+
+.searchBarSubmit {
+  width: 10%;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  transition-duration: 0.3s;
+}
+
+.searchBarSubmit:hover {
+  background-color: var(--primary);
+}
 
 /*Buttons*/
 .button {
-  color: var(--white);
-  background-color: var(--black);
+  color: var(--text);
+  background-color: var(--accent);
   text-align: center;
   padding: 5px 10px;
   text-decoration: none;
+  border: 1px solid var(--accent);
   font-family: var(--font);
   border-radius: 15px;
   font-size: 14px;
   transition-duration: 0.3s;
+}
+
+.button:hover {
+  background-color: var(--grey);
 }
 
 button.login-form,
@@ -671,4 +703,30 @@ html[data-theme="dark"] {
 }
 */
 
+.table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
 
+.thead {
+  display: table-header-group;
+  background-color: var(--primary);
+  color: var(--white);
+  top: 0;
+}
+
+.tbody {
+  display: table-row-group;
+}
+
+.tableContainer {
+  display: block;
+  height: 500px;
+  background-color: var(--background);
+  color: var(--black);
+  width: 95%;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+}
