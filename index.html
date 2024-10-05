@@ -138,7 +138,7 @@
         console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhrLogin.open("POST", "http://localhost:3002/submit-login-form"); // open a new request
+        xhrLogin.open("POST", "http://localhost:3003/submit-login-form"); // open a new request
         xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
         xhrLogin.onload = function () { // when the request is loaded
           console.log("Response received:", xhrLogin.responseText); // Log the response from the server

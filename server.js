@@ -22,7 +22,7 @@ function getKitDataByID(records) {
   records.recordset.forEach(function (record) {
     console.log(record);
   });
-  console.log(records.recordset[0].length);
+  console.log(records.recordset.length);
 }
 
 const formData = [
@@ -39,7 +39,7 @@ const mssql = require("mssql"); // Database connection module
 
 // Setting up the server
 const app = express();
-const port = 3002;
+const port = 3003;
 
 // Defining the database connection details
 const config = {
@@ -55,6 +55,8 @@ const config = {
   }
 };
 
+mssql.connect(config); // Connect to the database
+// otside of the app.get("/", (req, res) => { ... }) function to avoid multiple connections (CONNRESET error)
 
 // Middleware to parse JSON and URL-encoded data
 app.use(cors());
@@ -101,19 +103,37 @@ app.post("/submit-form", (req, res) => {
 
 // Handle fetching data from the database
 app.get("/fetch-data", (req, res) => {
-  mssql.connect(config); // Connect to the database
   const request = new mssql.Request(); // Create a new request object
 
-  request.query("SELECT * FROM kit_data ORDER BY category DESC, id ASC", function (err, recordset) { // Query the database
+  request.query("SELECT * FROM kit_data ORDER BY contents_of_qr_code ASC", function (err, recordset) { // Query the database
     if (err) { // Handle query errors
       console.error('Query error:', err);
       return res.status(500).send('Query error'); // Send an error response
     }
 
-    console.log("Kit data:", recordset.recordset[0]); // Log the records
     res.send(recordset.recordset); // Send the recordset to the client
-    getKitDataByID(recordset); // Call the function to log the records
+    console.log(recordset.recordset.length); // Call the function to log the records
     //writeKitData(request, formData);
+  });
+});
+
+// Handle Search
+app.get("/search-data", (req, res) => {
+  const searchRequest = req.query.search; // Get the search query parameter
+
+  if (!searchRequest) {
+    return res.status(400).send('Search query is required');
+  }
+  
+  const request = new mssql.Request();
+  const query = `DECLARE @searchRequest VARCHAR(255) = '%${searchRequest}%'; SELECT * FROM kit_data WHERE contents_of_qr_code LIKE @searchRequest;`;
+  request.query(query, function (err, result) {
+    if (err) {
+      console.error('Query error:', err);
+      return res.status(500).send('Query error');
+    }
+
+    res.send(result.recordset);
   });
 });
 
@@ -160,8 +180,9 @@ app.get("/", (req, res) => {
         }
       });
     }
-
     
+
+
 /*
     function getKitData(request) {
       request.query("SELECT * FROM kit_data", function (err, recordset) {
