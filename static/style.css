@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.5
+  Software: v0.2.6
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -265,6 +265,7 @@ sub {
   margin: 5px;
 }
 
+
 /* Table */
 table {
   font-family: var(--font);
@@ -291,10 +292,21 @@ script {
   background-color: var(--accent);
 }
 
-.searchBar {
-  width: 50%;
+
+/* Search Bar */
+.searchBarContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
   padding: 5px;
-  margin: 5px;
+  max-width: 80%;
+}
+
+.searchBar {
+  width: 40%;
+  padding: 5px;
+  margin: auto;
   border-radius: 5px;
   background-color: var(--background);
   border: 1px solid var(--accent);
@@ -302,10 +314,20 @@ script {
   color: var(--text);
 }
 
+.categorySelect {
+  width: 20%;
+  padding: 5px;
+  margin: auto;
+  border-radius: 5px;
+  background-color: var(--background);
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+
 .searchBarSubmit {
   width: 10%;
   padding: 5px 10px;
-  margin: 5px;
+  margin: auto;
   border-radius: 5px;
   background-color: var(--accent);
   border: 1px solid var(--accent);
@@ -318,6 +340,7 @@ script {
 .searchBarSubmit:hover {
   background-color: var(--primary);
 }
+
 
 /*Buttons*/
 .button {
@@ -464,6 +487,12 @@ label {
   display: inline-block;
   width: 20%;
   text-align: right;
+}
+
+label.categoryLabel {
+  width: 8%;
+  margin-right: 0px;
+  padding-right: 0px;
 }
 
 .free {
@@ -713,6 +742,7 @@ html[data-theme="dark"] {
   display: table-header-group;
   background-color: var(--primary);
   color: var(--white);
+  position: sticky;
   top: 0;
 }
 
@@ -721,11 +751,14 @@ html[data-theme="dark"] {
 }
 
 .tableContainer {
-  display: block;
-  height: 500px;
+  display: flex;
+  justify-content: left;
+  align-items: top;
+  height: 800px;
   background-color: var(--background);
   color: var(--black);
-  width: 95%;
+  width: 99%;
+  margin: auto;
   overflow-x: auto;
   overflow-y: auto;
   white-space: nowrap;

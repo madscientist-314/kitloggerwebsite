@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.5
+  Software: v0.2.6
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -119,14 +119,18 @@ app.get("/fetch-data", (req, res) => {
 
 // Handle Search
 app.get("/search-data", (req, res) => {
-  const searchRequest = req.query.search; // Get the search query parameter
+  var searchRequest = req.query.search; // Get the search query parameter
+  const category = req.query.category;
+
+  console.log('Search request:', searchRequest);
+  console.log('Category:', category);
 
   if (!searchRequest) {
     return res.status(400).send('Search query is required');
   }
   
   const request = new mssql.Request();
-  const query = `DECLARE @searchRequest VARCHAR(255) = '%${searchRequest}%'; SELECT * FROM kit_data WHERE contents_of_qr_code LIKE @searchRequest;`;
+  const query = `DECLARE @searchRequest VARCHAR(255) = '%${searchRequest}%'; SELECT * FROM kit_data WHERE ${category} LIKE @searchRequest;`;
   request.query(query, function (err, result) {
     if (err) {
       console.error('Query error:', err);

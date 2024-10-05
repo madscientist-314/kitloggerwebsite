@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.5
+  Software: v0.2.6
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -91,10 +91,28 @@
   <body>
     <h1>Kit Logger</h1>
     <sub>Overview</sub><br><br>
-    <button id="fetchDataButton" class="button">Fetch Data</button>
-    <input type="text" id="searchBox" placeholder="Search by ID.." class="searchBar">
-    <button class="searchBarSubmit" id="searchSubmit">Search</button>
-  <div id="dataContainer" class="tableContainer"></div>
+    
+    <div class="kitAnalysisContainer">
+      Analysis
+    </div>
+    <div class="searchBarContainer">
+      <button id="fetchDataButton" class="button" style="margin: auto;">Fetch All Data</button>
+
+      <label for="categorySelect" class="categoryLabel">Search by:</label>
+      <select name="Category" id="categorySelect" class="categorySelect">
+        <option value="contents_of_qr_code">ID</option>
+        <option value="category">Category</option>
+        <option value="status">Status</option>
+        <!--option value="on_loan">On Loan</option-->
+      </select>
+
+      <input type="text" id="searchBox" placeholder="Enter Search..." class="searchBar">
+      
+      <button class="searchBarSubmit" id="searchSubmit">Search</button>
+    </div>
+    <div id="dataContainer" class="tableContainer"></div>
+
+    
 
   <script>
     document.getElementById('fetchDataButton').addEventListener('click', function() {
@@ -178,8 +196,10 @@
 
     document.getElementById('searchSubmit').addEventListener('click', function() {
       var searchRequest = document.getElementById('searchBox').value;
+      var category = document.getElementById('categorySelect').value;
+      console.log('Search request:', searchRequest, 'Category:', category);
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}`, true);
+      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}&category=${encodeURIComponent(category)}`, true);
       xhr.onload = function() {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
