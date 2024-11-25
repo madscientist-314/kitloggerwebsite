@@ -36,7 +36,8 @@
   <nav>
     <!--Navigation Bar-->
     <div class="topnav">
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin" style="float: left;">
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin"
+        style="float: left;">
         <span class="material-symbols-outlined"> refresh </span>
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/">
@@ -44,20 +45,24 @@
           logout
         </span>
       </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage">
+      <a
+        href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage">
         Manage
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/io">
         Import
       </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin" class="active">
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin"
+        class="active">
         Overview
       </a>
-      <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
+      <div class="horizonal-line"
+        style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
     </div>
     <div class="dark-mode">
       <button id="theme-toggle" class="themebutton">
-        <span class="material-symbols-outlined" id="themeIcon"> light_mode </span>
+        <span class="material-symbols-outlined" id="themeIcon"> light_mode
+        </span>
       </button>
     </div>
     <script>
@@ -91,12 +96,143 @@
   <body>
     <h1>Kit Logger</h1>
     <sub>Overview</sub><br><br>
+    <span id="categoryChange" style="display: none;"></span>
+    <script>
+      function changeCat(category) {
+        document.getElementById('categoryChange').innerHTML = category;
+      }
+    </script>
+    <div class="flex-box">
+      <div class="accent" style="max-width: 100%; width: 90%;">
+        <p>Total Items: <span id="totalItems" class="analysisNumber">ㅤ</span></p>
+        <p>On Loan Items: <span id="onLoanItems" class="analysisNumber">ㅤ</span></p>
+        <p>Available Items: <span id="availableItems" class="analysisNumber">ㅤ</span></p>
+        <p>Missing Items: <span id="missingItems" class="analysisNumber">ㅤ</span></p>
+        <button id="analyseButton" class="button" style="background-color: var(--secondary);">Get Analysis</button>
+      </div>
+      
+      <div class="flex-header">
+        <h5 id="stoves">Stoves
+          <button class="analyseByCategory" onclick="changeCat('stoves')">
+            <span class="material-symbols-outlined" style="color: var(--black);">
+              arrow_drop_down
+            </span>
+          </button>
+        </h5>
+      </div>
+
+      <div class="flex-header">
+        <h5 id="rucksacks">Rucksacks
+          <button class="analyseByCategory" onclick="changeCat('rucksacks')">
+            <span class="material-symbols-outlined" style="color: var(--black);">
+              arrow_drop_down
+            </span>
+          </button>
+        </h5>
+      </div>
+
+      <div class="flex-header">
+        <h5 id="tents">Tents
+          <button class="analyseByCategory" onclick="changeCat('tents')">
+            <span class="material-symbols-outlined" style="color: var(--black);">
+              arrow_drop_down
+            </span>
+          </button>
+        </h5>
+      </div>
+
+      <div class="flex-header">
+        <h5 id="other">Other
+          <button class="analyseByCategory" onclick="changeCat('other')">
+            <span class="material-symbols-outlined" style="color: var(--black);">
+              arrow_drop_down
+            </span>
+          </button>
+        </h5>
+      </div>
+
+      <div class="secondary" style="max-width: 100%; width: 90%; display: none;" id="byCategory">
+        <p>Total: <span id="catTotal" class="analysisNumber">ㅤ</span></p>
+        <p>On Loan: <span id="catOnLoan" class="analysisNumber">ㅤ</span></p>
+        <p>Available: <span id="catAvailable" class="analysisNumber">ㅤ</span></p>
+        <p>Missing: <span id="catMissing" class="analysisNumber">ㅤ</span></p>
+      </div>
+
+    </div><br>
+    <div style="display: flex; justify-content: space-evenly">
     
-    <div class="kitAnalysisContainer">
-      Analysis
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('analyseButton').addEventListener('click', function() {
+          console.log('Analysing kit...');
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', 'http://localhost:3003/kit-analysis', true);
+          xhr.onload = function() {
+            if (xhr.status === 200) {
+              const data = JSON.parse(xhr.responseText);
+              console.log('Kit analysis data received:', data);
+              document.getElementById('totalItems').textContent = data[0]; // Use totalItems here
+              document.getElementById('onLoanItems').textContent = data[1];
+              document.getElementById('availableItems').textContent = data[2];
+              document.getElementById('missingItems').textContent = data[3];
+            } else {
+              console.error('Error fetching kit analysis data:', xhr.responseText);
+            }
+          };
+          xhr.onerror = function() {
+            console.error('Request failed');
+          };
+          xhr.send();
+        });
+
+        const analyseButtons = document.getElementsByClassName('analyseByCategory');
+        for (let i = 0; i < analyseButtons.length; i++) {
+          analyseButtons[i].addEventListener('click', function() {
+            var div = document.getElementById('byCategory');
+            var category = document.getElementById('categoryChange').innerHTML;
+
+            if (!category) {
+              console.error('Category is required');
+              return;
+            }
+            console.log('Analysing kit by category:', category);
+
+            if (div.style.display === 'none') {
+              div.style.display = 'flex';
+              document.getElementById(category).style.color = 'var(--primary)';
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', `http://localhost:3003/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
+              xhr.onload = function() {
+                if (xhr.status === 200) {
+                  const data = JSON.parse(xhr.responseText);
+                  console.log('Kit analysis data received:', data);
+                  document.getElementById('catTotal').innerHTML = data[0]; // Use totalItems here
+                  document.getElementById('catOnLoan').innerHTML = data[1];
+                  document.getElementById('catAvailable').innerHTML = data[2];
+                  document.getElementById('catMissing').innerHTML = data[3];
+                } else {
+                  console.error('Error fetching kit analysis data:', xhr.responseText);
+                }
+              };
+              xhr.onerror = function() {
+                console.error('Request failed');
+              };
+              xhr.send();
+            } else {
+              div.style.display = 'none';
+              document.getElementById('stoves').style.color = 'var(--black)';
+              document.getElementById('rucksacks').style.color = 'var(--black)';
+              document.getElementById('tents').style.color = 'var(--black)';
+              document.getElementById('other').style.color = 'var(--black)';
+            }
+          });
+        }
+      });
+    </script>
     </div>
     <div class="searchBarContainer">
-      <button id="fetchDataButton" class="button" style="margin: auto;">Fetch All Data</button>
+      <button id="fetchDataButton" class="button" style="margin: auto;">Fetch
+        All Data</button>
 
       <label for="categorySelect" class="categoryLabel">Search by:</label>
       <select name="Category" id="categorySelect" class="categorySelect">
@@ -106,35 +242,21 @@
         <!--option value="on_loan">On Loan</option-->
       </select>
 
-      <input type="text" id="searchBox" placeholder="Enter Search..." class="searchBar">
-      
+      <input type="text" id="searchBox" placeholder="Enter Search..."
+        class="searchBar">
+
       <button class="searchBarSubmit" id="searchSubmit">Search</button>
     </div>
     <div id="dataContainer" class="tableContainer"></div>
 
-    
-
-  <script>
-    document.getElementById('fetchDataButton').addEventListener('click', function() {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'http://localhost:3003/fetch-data', true);
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
-          console.log('Data received:', data);
-          formatData(data);
-        } else {
-          console.error('Error fetching data:', xhr.responseText);
-        }
-      };
-      xhr.onerror = function() {
-        console.error('Request failed');
-      };
-      xhr.send();
-    });
+    <script>
+    let totalItems = 0;
 
     // Format date in dd/mm/yyyy format
     function formatDate(DateString) {
+      if (!DateString) {
+        return 'Invalid Date';
+      }
       const date = new Date(DateString);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
@@ -143,26 +265,18 @@
     }
 
     // Format data into a table
-    function formatData(data) {
+    function formatData(data, method) {
       const dataContainer = document.getElementById('dataContainer');
       dataContainer.innerHTML = '';
 
-      // Display message if no data available
       if (data.length === 0) {
         dataContainer.textContent = 'No data available';
-        document.getElementById('fetchDataButton').innerHTML = 'Fetch Data';
         return;
       }
 
-      const button = document.getElementById('fetchDataButton');
-      button.innerHTML = 'Refresh Data';
-
       const table = document.createElement('table');
-      table.setAttribute('class', 'table');
       const thead = document.createElement('thead');
-      thead.setAttribute('class', 'thead');
       const tbody = document.createElement('tbody');
-      tbody.setAttribute('class', 'tbody');
 
       // Create table headers
       const headers = Object.keys(data[0]);
@@ -194,17 +308,15 @@
       dataContainer.appendChild(table);
     }
 
-    document.getElementById('searchSubmit').addEventListener('click', function() {
-      var searchRequest = document.getElementById('searchBox').value;
-      var category = document.getElementById('categorySelect').value;
-      console.log('Search request:', searchRequest, 'Category:', category);
+    document.getElementById('fetchDataButton').addEventListener('click', function() {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}&category=${encodeURIComponent(category)}`, true);
+      xhr.open('GET', 'http://localhost:3003/fetch-data', true);
       xhr.onload = function() {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
+          totalItems = data.length; // Set totalItems
           console.log('Data received:', data);
-          formatData(data); 
+          formatData(data, 'fetch');
         } else {
           console.error('Error fetching data:', xhr.responseText);
         }
@@ -213,8 +325,34 @@
         console.error('Request failed');
       };
       xhr.send();
-
     });
+
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var searchRequest = document.getElementById('searchBox').value;
+      var category = document.getElementById('category').value;
+      if (!searchRequest || !category) {
+        console.error('Search query and category are required');
+        return;
+      }
+      console.log('Search request:', searchRequest, 'Category:', category);
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}&category=${encodeURIComponent(category)}`, true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          console.log('Search data received:', data);
+          formatData(data, 'search');
+        } else {
+          console.error('Error fetching data:', xhr.responseText);
+        }
+      };
+      xhr.onerror = function() {
+        console.error('Request failed');
+      };
+      xhr.send();
+    });
+
   </script>
   </body>
 

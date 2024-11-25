@@ -153,6 +153,7 @@ html[data-theme="dark"] {
 
 .psw:hover {
   color: var(--grey);
+  cursor: pointer;
 }
 
 
@@ -300,7 +301,7 @@ script {
   align-items: center;
   margin: auto;
   padding: 5px;
-  max-width: 80%;
+  max-width: 99%;
 }
 
 .searchBar {
@@ -339,6 +340,7 @@ script {
 
 .searchBarSubmit:hover {
   background-color: var(--primary);
+  cursor: pointer;
 }
 
 
@@ -358,6 +360,16 @@ script {
 
 .button:hover {
   background-color: var(--grey);
+  cursor: pointer;
+}
+
+.analyseByCategory {
+  background-color: var(--white);
+  border: 1px solid var(--white);
+}
+
+.analyseByCategory:hover {
+  cursor: pointer;
 }
 
 button.login-form,
@@ -393,6 +405,7 @@ button.hire {
 button.hire:hover,
 button.login-form:hover {
   background-color: var(--accent);
+  cursor: pointer;
 }
 
 button.login-form {
@@ -546,6 +559,21 @@ textarea {
   height: 7em;
 }
 
+#analyseButton{
+  display: block;
+  font-size: 20px;
+}
+
+span.analysisNumber{
+  font-size: 18px;
+  color: var(--white);
+  background-color: var(--darkGrey);
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-left: 5px;
+}
 
 /* FlexBoxes */
 .flex-box {
@@ -568,6 +596,7 @@ textarea {
 .flex-box > div.warning,
 .flex-box > div.form {
   font-family: var(--font);
+  display: flex;
   max-width: 370px;
   height: auto;
   padding: 6px;
@@ -604,6 +633,12 @@ textarea {
   border: 1px solid var(--primary);
   max-width: 500px;
   background-color: var(--primary);
+}
+
+.flex-box > div.flex-header{
+  font-size: 20px;
+  color: var(--white);
+  margin: 5px;
 }
 
 /*
