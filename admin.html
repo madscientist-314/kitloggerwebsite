@@ -30,6 +30,7 @@
     <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
   </head>
 
@@ -40,6 +41,11 @@
         style="float: left;">
         <span class="material-symbols-outlined"> refresh </span>
       </a>
+      <button class="login-button" style="float: left;" onclick="QRPopup('overview')">
+        <span class="material-symbols-outlined">
+          qr_code_scanner
+        </span>
+      </button>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/">
         <span class="material-symbols-outlined" style="text-align: centre">
           logout
@@ -90,12 +96,64 @@
         document.documentElement.setAttribute("data-theme", targetTheme);
         localStorage.setItem("theme", targetTheme);
       };
+
+      function QRPopup(page) {
+    var popup = document.getElementById('qrPopup');
+    popup.style.display = 'block';
+
+    var qrCodeScanner = new Html5Qrcode("qr");
+    qrCodeScanner.start(
+      { facingMode: "environment" }, // Use the rear camera
+      {
+        fps: 10, // Frames per second
+        qrbox: 250 // QR code scanning box size
+      },
+      qrCodeMessage => {
+        console.log(`QR Code detected: ${qrCodeMessage}`);
+        // Handle the QR code message (e.g., navigate to the URL)
+        window.location.href = qrCodeMessage;
+      },
+      errorMessage => {
+        console.error(`QR Code scanning error: ${errorMessage}`);
+      }
+    ).catch(err => {
+      console.error(`Unable to start QR Code scanner: ${err}`);
+    });
+  }
+
+  function closeQRPopup() {
+    var popup = document.getElementById('qrPopup');
+    popup.style.display = 'none';
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        var qrCodeScanner = new Html5Qrcode("qr");
+        qrCodeScanner.stop().then(ignore => {
+          console.log("QR Code scanner stopped.");
+        }).catch(err => {
+          console.error(`Unable to stop QR Code scanner: ${err}`);
+        });
+      }
+    }).catch(err => {
+      console.error(`Unable to get cameras: ${err}`);
+    });
+  }
     </script>
   </nav>
 
   <body>
     <h1>Kit Logger</h1>
     <sub>Overview</sub><br><br>
+
+    <div id="qrPopup" class="QRpopup">
+      <div class="QRpopup-content">
+        <span class="close" onclick="closeQRPopup()">&times;</span>
+        <h2>QR Scanner</h2>
+        <div id="qr">
+          <!-- QR Scanner will be initialized here -->
+        </div>
+      </div>
+    </div>
+
     <span id="categoryChange" style="display: none;"></span>
     <script>
       function changeCat(category) {

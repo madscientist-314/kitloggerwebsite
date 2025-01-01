@@ -798,3 +798,25 @@ html[data-theme="dark"] {
   overflow-y: auto;
   white-space: nowrap;
 }
+
+.QRpopup {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0,0.7);
+}
+
+.QRpopup-content {
+  background-color: var(--background);
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid var(--accent);
+  width: 80%;
+  max-width: 600px;
+}
+

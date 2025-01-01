@@ -52,7 +52,8 @@ function writeKitData(request, writeQuery) {
     }
   });
 }
-    
+
+/*    
 function checkLoginData(request, username, password) {
   request.query("SELECT * FROM login", function (err, recordset) {
     if (err) {
@@ -78,10 +79,20 @@ function checkLoginData(request, username, password) {
     }
     console.log("Login failed");
   });
+}*/
+
+function encryptPassword(password) {
+  const saltRounds = 10;
+  const hash = bcrypt.hashSync(password, saltRounds);
+  return hash;
+}
+
+function verifyPassword(password, storedHash) {
+  return bcrypt.compareSync(password, storedHash);
 }
 
 const formData = [
-  ["SCD-ST-L35", "Missing", "Stoves", "Trangia", "Trangia 25-1/UL", "Silver", "L", 0, 0, 0, '2018-08-01', '121.56', "Trangia", '2024-01-10', '2021-01-10', 10, '2000-01-01', 0, ""],
+  ["SCD-ST-L35", "Missing", "Rucksacks", "Endurance", "Mission 65", "Red", "65", 0, 0, 0, '2018-08-01', '121.56', "Endurance", '2024-01-10', '2021-01-10', 10, '2000-01-01', 0, ""],
   ["SCD-ST-L36", "Available", "Stoves", "Trangia", "Trangia 25-2/UL", "Silver", "M", 0, 0, 0, '2019-08-01', '130.00', "Trangia", '2025-01-10', '2022-01-10', 10, '2001-01-01', 0, ""]
 ];
 
@@ -91,6 +102,7 @@ const bodyParser = require("body-parser"); // Body parser module
 const nodemailer = require("nodemailer"); // Email module
 const cors = require("cors"); // Cross-origin resource sharing module
 const mssql = require("mssql"); // Database connection module
+const bcrypt = require('bcrypt'); // Password hashing module
 
 // Setting up the server
 const app = express();
@@ -262,7 +274,7 @@ app.get("/kit-analysis-by-category", async (req, res) => {
 });
 
 // Handle login form submissions
-app.post("/submit-login-form", (req, res) => {
+app.post("/submit-login-form", async (req, res) => {
   console.log("Form submission received"); // Log when the form is received
 
   const loginFormData = req.body;
@@ -273,9 +285,41 @@ app.post("/submit-login-form", (req, res) => {
   console.log("Username:", username);
   console.log("Password:", password);
 
-  // Add your login logic here
+  //console.log(encryptPassword(password));
 
-  res.send("Login form submitted");
+  try {
+    const pool = await getConnection();
+    console.log('Database connection established');
+
+    const request = pool.request();
+    request.input('username', mssql.VarChar, username);
+    const result = await request.query("SELECT * FROM login WHERE username = @username");
+
+    if (result.recordset.length === 0) {
+      console.log("Login failed: User not found");
+      return res.status(401).send("Login failed");
+    }
+
+    const loginData = result.recordset[0];
+    const storedHash = loginData.password_hash;
+
+    //console.log(encryptPassword(password));
+    //console.log(verifyPassword(password, loginData[0].password_hash))
+    //console.log(loginData[0].username);
+    if (verifyPassword(password, storedHash)) {
+      console.log("Login successful");
+      console.log("User ID:", loginData.uid);
+      const kitHireData = await request.query("SELECT * FROM kit_hire WHERE user_id = " + loginData.uid);
+      console.log("Kit hire data:", kitHireData.recordset[0]);
+      return res.status(200).send("Login successful");
+    } else {
+      console.log("Login failed: Incorrect password");
+      return res.status(401).send("Login failed");
+    }
+  } catch (err) {
+    console.log("Login failed", err);
+    return res.status(500).send("Server Error");
+  }
 });
 
 /*
@@ -371,13 +415,11 @@ app.get("/kit-analysis", (req, res) => {
 
 });
 
-
 /*
     //request.query("CREATE TABLE login(user_id INT IDENTITY(1,1) PRIMARY KEY,	username VARCHAR(50), password_hash VARCHAR(50), encrypt_key VARCHAR(50), exped_level VARCHAR(6), loan_paid BIT, no_of_loaned_items INT);", function (err, success) {});
     //request.query("CREATE TABLE kit_hire(user_id INT PRIMARY KEY, loan_start_date DATE, loan_end_date DATE, loan_name VARCHAR(50), loan_email VARCHAR(70), loan_paid BIT, rental_value VARCHAR(10), kit_id1 INT, kit_id2 INT, kit_id3 INT, kit_id4 INT, kit_id5 INT);", function (err, success) {});
-*/
-    
-  /*  
+*/  
+/*  
     const username = "rfaughny2";
     const password = "$2a$04$hYFCtwlw8MLiSqMl.JaMSeZbCgI6jZqPPSzb2wDHeU8Xo/GLz.z0u";
     console.log(checkLoginData(request, username, password));*/
