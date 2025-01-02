@@ -115,6 +115,7 @@ const nodemailer = require("nodemailer"); // Email module
 const cors = require("cors"); // Cross-origin resource sharing module
 const mssql = require("mssql"); // Database connection module
 const bcrypt = require('bcrypt'); // Password hashing module
+const QrScanner = require('qr-scanner'); // QR code scanner module
 
 // Setting up the server
 const app = express();
@@ -204,7 +205,8 @@ app.get("/fetch-data", async (req, res) => {
     console.log('Database connection established');
 
     const request = pool.request();
-    const result = await request.query("SELECT * FROM kit_data ORDER BY contents_of_qr_code ASC");
+    request.input('category', mssql.VarChar, 'Rucksacks');
+    const result = await request.query("SELECT * FROM kit_data ORDER BY id ASC");
 
     res.send(result.recordset); // Send the recordset to the client
     console.log(result.recordset.length); // Log the number of records
@@ -301,7 +303,7 @@ app.post("/submit-login-form", async (req, res) => {
   const username = loginFormData["uname"];
   const password = loginFormData["psw"];
 
-  //console.log(encryptPassword(password));
+  console.log(encryptPassword(password));
 
   try {
     const pool = await getConnection();
@@ -436,30 +438,70 @@ app.get("/kit-analysis", (req, res) => {
 
 });
 
-app.post("/submit-loan-form", (req, res) => {
-  console.log("Form submission received"); // Log when the form is received
+app.post("/assign-kit", async (req, res) => {
+  const data = req.body;
+  console.log(data);
+  if (!data.key) {
+    return res.status(400).send({ error: 'Key is required' });
+  }
 
-  const formData = req.body;
-  console.log("Form data:", formData); // Log the form data
+  try {
+    const pool = await getConnection();
+    console.log('Database connection established');
 
-  // Creating a transporter object using SMTP transport
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'noreply.kitlogger@gmail.com', // Sender's email
-      pass: 'krwg eyqp qlhq ioln', // Email account app password
-    },
-  });
+    const assignedKit = [];
 
-  // Sending the email
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error sending email:', error);
-      return res.status(500).send(error.toString());
-    }
-    console.log('Email sent:', info.response);
-    return res.status(200).send("Email sent: " + info.response);
-  });
+    const assignItem = async (type, size) => {
+      const request = pool.request();
+      request.input('type', mssql.VarChar, type);
+      request.input('size', mssql.VarChar, size);
+      request.input('key', mssql.VarChar, data.key);
+
+      const query1 = `
+        SELECT uid
+        FROM login
+        WHERE login.encrypt_key = @key`;
+      const uid = await request.query(query1);
+      console.log(uid.recordset[0].uid);
+      request.input('uid', mssql.Int, uid.recordset[0].uid);
+      const result = await request.query(`
+        SELECT TOP 1 * FROM kit_data 
+        WHERE category = @type AND attribute_size = @size AND status = 'Available'
+      `);
+      console.log(result);
+
+      if (result.recordset.length === 0) {
+        return null;
+      }
+
+      const item = result.recordset[0];
+
+      await request.query(`
+        UPDATE kit_data 
+        SET status = 'On Loan', on_loan = 1 
+        WHERE id = ${item.id}
+      `);
+
+      await request.query(`
+        INSERT INTO kit_hire (kit_id1, user_id) 
+        VALUES (${item.id}, @uid)
+      `);
+      console.log('Kit assigned:', item.contents_of_qr_code);
+      assignedKit.push({ type, qrCode: item.contents_of_qr_code });
+    };
+
+    if (data.rucksack) await assignItem('Rucksacks', data.rucksackSize);
+    if (data.sleepingBag) await assignItem('Sleeping Bag', null);
+    if (data.sleepingMat) await assignItem('Sleeping Mat', null);
+    if (data.boots) await assignItem('Boots', data.bootsSize);
+    if (data.waterproofs) await assignItem('Waterproofs', null);
+    
+
+    res.json({ assignedKit });
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.get("/get-user-details", async (req, res) => {
@@ -482,15 +524,17 @@ app.get("/get-user-details", async (req, res) => {
         login.exped_level, 
         groups.group_level,
         groups.group_size, 
-        groups.group_tent_1,
-        groups.group_tent_2,
-        groups.group_tent_3,
-        groups.group_stove_1,
-        groups.group_stove_2
+        kit_data.contents_of_qr_code AS group_tent_1,
+        kit_data.contents_of_qr_code AS group_tent_2,
+        kit_data.contents_of_qr_code AS group_tent_3,
+        kit_data.contents_of_qr_code AS group_stove_1,
+        kit_data.contents_of_qr_code AS group_stove_2
       FROM 
         login
       JOIN 
         groups ON login.group_id = groups.group_id 
+      LEFT JOIN 
+        kit_data ON kit_data.id IN (groups.group_tent_1, groups.group_tent_2, groups.group_tent_3, groups.group_stove_1, groups.group_stove_2)
       WHERE 
         login.encrypt_key = @key
     `;
@@ -509,11 +553,13 @@ app.get("/get-user-details", async (req, res) => {
       groupLevel: userData.group_level,
       groupSize: userData.group_size,
     };
-    if (userData.group_tent_1) response.groupTent1 = userData.group_tent_1;
-    if (userData.group_tent_2) response.groupTent2 = userData.group_tent_2;
-    if (userData.group_tent_3) response.groupTent3 = userData.group_tent_3;
-    if (userData.group_stove_1) response.groupStove1 = userData.group_stove_1;
-    if (userData.group_stove_2) response.groupStove2 = userData.group_stove_2;
+
+    if (userData.group_tent_1) response.groupTent1 = userData.group_tent_1.slice(-3);
+    if (userData.group_tent_2) response.groupTent2 = userData.group_tent_2.slice(-3);
+    if (userData.group_tent_3) response.groupTent3 = userData.group_tent_3.slice(-3);
+    if (userData.group_stove_1) response.groupStove1 = userData.group_stove_1.slice(-3);
+    if (userData.group_stove_2) response.groupStove2 = userData.group_stove_2.slice(-3);
+
     console.log(response);
     res.json(response);
   } catch (err) {

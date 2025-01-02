@@ -91,6 +91,14 @@
     <sub>Student Hire</sub>
     <p></p>
     <script>
+        function divToggle(trigger, div) {
+            if (document.getElementById(trigger).checked) {
+                document.getElementById(div).style.display = 'inline'
+            } else {
+                document.getElementById(div).style.display = 'none'
+            }
+        }
+        
         // Check if the URL contains ?true and hide the form div if it does
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
@@ -98,11 +106,13 @@
             const regex = /^\?true(&|$)/;
 
             if (regex.test(queryString)) {
-                document.getElementById('internalHireForm').style.display = 'block';
+                document.getElementById('flex-div').style.display = 'flex';
             } else {
                 document.getElementById('internalHireForm').style.display = 'none';
-                document.getElementById('form-div').innerHTML = 'Payment Incomplete. Please complete payment via parent pay. This page may take up to 24hr to update.';
+                document.getElementById('flex-div').style.display = 'block';
+                document.getElementById('form').innerHTML = 'Payment Incomplete. Please complete payment via parent pay. This page may take up to 24hr to update.';
             }
+
             // Extract the key from the URL
             const key = urlParams.get('key');
             if (key) {
@@ -110,34 +120,87 @@
                 fetch(`http://localhost:3003/get-user-details?key=${key}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Display the user's details on the page
-                        document.getElementById('name-display').innerText = data.name;
-                        document.getElementById('group-display').innerText = data.groupNumber;
-                        document.getElementById('expedition-display').innerText = data.expeditionLevel;
-                        document.getElementById('group-level-display').innerText = data.groupLevel;
-                        document.getElementById('group-size-display').innerText = data.groupSize;
+                        if (data.expeditionLevel <= 3) {
 
-                        if (data.groupTent1 && data.groupTent2 && data.groupTent3) {
-                            const tent1 = document.createElement('p');
-                            tent1.innerText = `Group Tents: ${data.groupTent1 + ', ' + data.groupTent2 + ', ' + data.groupTent3}`;
-                            document.getElementById('details').appendChild(tent1);
-                        } else if (data.groupTent1 && data.groupTent2) {
-                            const tent1 = document.createElement('p');
-                            tent1.innerText = `Group Tents: ${data.groupTent1 + ', ' + data.groupTent2}`;
-                            document.getElementById('details').appendChild(tent1);
-                        } else if (data.groupTent1) {
-                            const tent1 = document.createElement('p');
-                            tent1.innerText = `Group Tent: ${data.groupTent1}`;
-                            document.getElementById('details').appendChild(tent1);
-                        }
-                        if (data.groupStove1 && data.groupStove2) {
-                            const stove1 = document.createElement('p');
-                            stove1.innerText = `Group Stoves: ${data.groupStove1 + ', ' + data.groupStove2}`;
-                            document.getElementById('details').appendChild(stove1);
-                        } else if (data.groupStove1) {
-                            const stove1 = document.createElement('p');
-                            stove1.innerText = `Group Stove: ${data.groupStove1}`;
-                            document.getElementById('details').appendChild(stove1);
+                            // Display the user's details on the page
+                            document.getElementById('name-display').innerText = data.name;
+                            document.getElementById('group-display').innerText = data.groupNumber;
+                            document.getElementById('group-size-display').innerText = data.groupSize;
+                            if (data.groupSize < 4) {
+                                document.getElementById('group-size-display').style.color = 'red';
+                            } else {
+                                document.getElementById('group-size-display').style.color = 'green';
+                            }
+
+                            switch (data.groupLevel) {
+                                case 1:
+                                    document.getElementById('group-level-display').innerText = 'Bronze';
+                                    break;
+                                case 2:
+                                    document.getElementById('group-level-display').innerText = 'Silver';
+                                    break;
+                                case 3:
+                                    document.getElementById('group-level-display').innerText = 'Gold';
+                                    break;
+                                default:
+                                    document.getElementById('group-level-display').innerText = 'Unknown';
+                                    break;
+                            }
+
+                            switch (data.expeditionLevel) {
+                                case 1:
+                                    document.getElementById('expedition-display').innerText = 'Bronze';
+                                    break;
+                                case 2:
+                                    document.getElementById('expedition-display').innerText = 'Silver';
+                                    break;
+                                case 3:
+                                    document.getElementById('expedition-display').innerText = 'Gold';
+                                    break;
+                                case 0:
+                                    document.getElementById('expedition-display').innerText = 'None';
+                                    break;
+                                default:
+                                    document.getElementById('expedition-display').innerText = 'Unknown';
+                                    break;
+                            }
+
+                            if (document.getElementById('expedition-display').innerText === document.getElementById('group-level-display').innerText) {
+                                document.getElementById('internalHireForm').style.display = 'block';
+                                document.getElementById('expedition-display').style.color = 'green';
+                                document.getElementById('group-level-display').style.color = 'green';
+                            }
+
+                            const detailsDiv = document.getElementById('details');
+                            detailsDiv.innerHTML = ''; // Clear previous details
+
+                            if (data.groupTent1) {
+                                const tent1 = document.createElement('p');
+                                tent1.innerText = `Group Tent 1: ${data.groupTent1}`;
+                                detailsDiv.appendChild(tent1);
+                            }
+                            if (data.groupTent2) {
+                                const tent2 = document.createElement('p');
+                                tent2.innerText = `Group Tent 2: ${data.groupTent2}`;
+                                detailsDiv.appendChild(tent2);
+                            }
+                            if (data.groupTent3) {
+                                const tent3 = document.createElement('p');
+                                tent3.innerText = `Group Tent 3: ${data.groupTent3}`;
+                                detailsDiv.appendChild(tent3);
+                            }
+                            if (data.groupStove1) {
+                                const stove1 = document.createElement('p');
+                                stove1.innerText = `Group Stove 1: ${data.groupStove1}`;
+                                detailsDiv.appendChild(stove1);
+                            }
+                            if (data.groupStove2) {
+                                const stove2 = document.createElement('p');
+                                stove2.innerText = `Group Stove 2: ${data.groupStove2}`;
+                                detailsDiv.appendChild(stove2);
+                            }
+                        } else {
+                            window.location.href = "/admin.html?" + "&key=" + key; // Redirect to the admin page if the expedition level is greater than 3
                         }
                     })
                     .catch(error => {
@@ -146,22 +209,63 @@
             }
         };
     </script>
-    <div class="flex-box" style="max-width: 90%">
-        <div class="form" id="form-div" style="text-align: center;">
-            <form class="hire" id="internalHireForm" type="_blank" action="http://localhost:3000/submit-loan-form"
+    <div class="flex-box" id="flex-div" style="max-width: 90%; display: none;">
+        <div class="secondary">
+            <ul class="hire-student" id="student-info">
+                <h5 style="text-align: center;">Your Details</h5>
+                <p class="padded"><b>Student Name : </b><span id="name-display" class="color"></span></p>
+                <p class="padded"><b>Group # : </b><span id="group-display" class="color"></span></p>
+                <p class="padded"><b>Level : </b><span id="expedition-display" class="color"></span></p>
+                <p class="padded"><b>Group Level : </b><span id="group-level-display" class="color"></span></p>
+                <p class="padded"><b>Group Size : </b><span id="group-size-display" class="color"></span></p>
+            </ul>
+        </div>
+        <div class="accent">
+            <ul class="hire-student" id="student-info">
+                <h5>Group Information</h5>
+                <div id="details" style="text-align: center;"></div>
+            </ul>
+        </div>
+        <div class="form" id="form" style="text-align: center;">
+            <form class="hire" id="internalHireForm" type="_blank" action="http://localhost:3000/confirm-loan"
                 method="POST">
                 <ul>
                     <li>
-                        <p style="text-align: center; font-weight: 1000; font-size: 20px;">
-                            <b>Hire Form</b>
-                        </p>
+                        <h5>Kit Request</h5>
+                        <p>Here you can request any additional kit you may need</p>
+                        <div class="horizonal-line" style="margin-top: 5px; margin-bottom: 8px; opacity: 0.9; background-color: var(--primary)"></div>
                     </li>
-                    <p for="studentName">Student Name: <span id="name-display"></span></p>
-                    <p for="groupNumber">Group #: <span id="group-display"></span></p>
-                    <p for="expeditionLevel">Expedition Level: <span id="expedition-display"></span></p>
-                    <p for="groupLevel">Group Level: <span id="group-level-display"></span></p>
-                    <p for="groupSize">Group Size: <span id="group-size-display"></span></p>
-                    <div id="details"></div>
+                    <li>
+                        <label for="rucksacks" class="labelSize">Rucksack</label>
+                        <input class="checkbox" type="checkbox" id="rucksack" name="rucksack" onclick="divToggle('rucksack','rucksack-dropdown')">
+                        <div id="rucksack-dropdown" style="display: none;">
+                            <select name="rucksackSize" id="rucksackSize" required>
+                                <option value="30">Day Sack</option>
+                                <option value="65">Medium (Bronze/Silver)</option>
+                                <option value="75">Large (Gold)</option>
+                            </select>*
+                        </div>
+                    </li>
+                    <li>
+                        <label for="Sleeping Bag">Sleeping Bag</label>
+                        <input class="checkbox" type="checkbox" id="sleepingBag" name="sleeping bag">
+                        <label for="Sleeping Mats">Sleeping Mat</label>
+                        <input class="checkbox" type="checkbox" id="sleepingMat" name="sleeping mat">
+                    </li>
+                    <li>
+                        <label for="Boots" class="labelSize">Boots</label>
+                        <input class="checkbox" type="checkbox" id="boots" name="boots" onclick="divToggle('boots','boots-size')">
+                        <div id="boots-size" style="display: none;">
+                            <select name="bootsSize" id="bootsSize" required>
+                                <option value="7">UK 7</option>
+                                <option value="8">UK 8</option>
+                                <option value="9">UK 9</option>
+                            </select>*
+                    </li>
+                    <li>
+                        <label for="Waterproofs">Waterproofs</label>
+                        <input class="checkbox" type="checkbox" id="waterproofs" name="waterproofs">
+                    </li>
 
                     <p style="font-size: 70%; color: var(--grey)">*indicates a
                         required field</p>
@@ -171,41 +275,55 @@
                 </ul>
             </form>
         </div>
-        <!--script>
-            const form = document.getElementById("internalHireForm");
-            form.addEventListener("submit", function (event) { // when the form is submitted
-                event.preventDefault(); // stop the form from submitting using html
+        <div id="detailsPersonal" class="accent" style="text-align: center; display: none;"></div>
+        <script>
+            document.getElementById("internalHireForm").addEventListener("submit", function (event) {
+              event.preventDefault(); // Prevent the default form submission
+          
+              const formData = new FormData(this);
+              const jsonData = {};
+              formData.forEach((value, key) => {
+                jsonData[key] = value;
+              });
+          
+              const key = new URLSearchParams(window.location.search).get('key');
+              jsonData.key = key;
+              console.log(jsonData);
 
-                const data = new FormData(form); // create a new FormData object
-                const jsonData = {};
-                data.forEach((value, key) => {
-                    jsonData[key] = value;
+              fetch("http://localhost:3003/assign-kit", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+              })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                  }
+                  // Display the assigned kit details
+                  const detailsDiv = document.getElementById('detailsPersonal');
+                  detailsDiv.style.display = 'block';
+                  detailsDiv.innerHTML = ''; // Clear previous details
+
+                  console.log(data);
+          
+                  data.assignedKit.forEach(item => {
+                    const p = document.createElement('p');
+                    p.innerText = `${item.type}: ${item.qrCode.slice(-3)}`;
+                    detailsDiv.appendChild(p);
+                  });
+          
+                  // Hide the form
+                  //document.getElementById('internalHireForm').style.display = 'none';
+                })
+                .catch(error => {
+                  console.error('Error assigning kit:', error);
                 });
-                console.log("Form data as JSON:", jsonData); // Log the form data as JSON
-
-                const xhr = new XMLHttpRequest(); // create a new XMLHttpRequest object
-                xhr.open("POST", "http://localhost:3003/submit-loan-form"); // open a new request
-                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.onload = function () { // when the request is loaded
-                    console.log("Response received:", xhr.responseText); // Log the response from the server
-                    if (xhr.status === 200) { // if the request is successful
-                        const button = document.getElementById("externalHireSubmit").innerHTML = "Submitted"; // change the button text
-                        setTimeout(function () { // after 3 seconds
-                            button.innerHTML = "Submit"; // change the button text back
-                        }, 3000);
-                    } else {
-                        console.error('Error:', xhr.responseText); // Log the error response
-                        document.getElementById("error messages").style.display = "block"; // show the error message
-                    }
-                };
-                xhr.onerror = function () {
-                    console.error('Request failed'); // Log if the request fails
-                    document.getElementById("error messages").style.display = "block"; // show the error message
-                };
-                xhr.send(JSON.stringify(jsonData)); // send the form data
-                event.target.reset(); // reset the form
             });
-        </script-->
+          </script>
         <div id="error messages" class="accent" style="display: none;">
             <span class="material-symbols-outlined">
                 error

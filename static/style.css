@@ -293,18 +293,34 @@ script {
   background-color: var(--accent);
 }
 
+.analysis-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0px 0;
+}
+
+.analysis-item {
+  flex: 1 1 140px;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
 
 /* Search Bar */
 .searchBarContainer {
   display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 200px;
   justify-content: center;
   align-items: center;
-  margin: auto;
+  margin: 5px;
   padding: 5px;
   max-width: 99%;
 }
 
-.searchBar {
+.search-bar {
   width: 40%;
   padding: 5px;
   margin: auto;
@@ -313,9 +329,44 @@ script {
   border: 1px solid var(--accent);
   height: 28px;
   color: var(--text);
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+@media (max-width: 300px) {
+  .analysis-item {
+    flex: 1 1 100%;
+  }
+
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
 
 .categorySelect {
+  width: 20%;
+  display: flex;
+  padding: 5px;
+  margin: auto;
+  border-radius: 5px;
+  background-color: var(--background);
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+
+select {
   width: 20%;
   padding: 5px;
   margin: auto;
@@ -325,8 +376,18 @@ script {
   color: var(--text);
 }
 
+.labelSize {
+  display: inline-block;
+  width: 15%;
+  text-align: right;
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin: auto;
+  padding: 10px;
+}
+
 .searchBarSubmit {
-  width: 10%;
+  display: flex;
   padding: 5px 10px;
   margin: auto;
   border-radius: 5px;
@@ -475,6 +536,20 @@ a.redirect {
   color: var(--index);
 }
 
+span.color {
+  color: var(--text);
+  font-weight: 800;
+  background-color: var(--background);
+  padding: 0px 8px 3px 8px;
+  margin-left: 8px;
+  border-radius: 5px;
+  float: right;
+}
+
+p.padded {
+  padding: 5px;
+  margin: 5px;;
+}
 
 /* Forms */
 form.hire {
@@ -492,20 +567,33 @@ form.hire > ul {
   margin: 0;
 }
 
+ul.hire-student {
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  padding: 5px;
+  margin: auto;
+}
+
+ul.hire-student > p {
+  font-size: 16px;
+}
+
 form.hire > ul > li {
   margin: 3px;
 }
 
 label {
   display: inline-block;
-  width: 20%;
+  width: 25%;
   text-align: right;
 }
 
 label.categoryLabel {
   width: 8%;
-  margin-right: 0px;
-  padding-right: 0px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin: auto;
+  padding: 10px;
 }
 
 .free {
@@ -518,9 +606,11 @@ label.categoryLabel {
 
 input.checkbox {
   display: inline-block;
-  max-width: 30px;
-  margin-top: 10px;
-  margin-left: 5px;
+  max-width: 10px;
+  width: 25.6%;
+  margin: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 input.date {
@@ -632,6 +722,7 @@ span.analysisNumber{
 .flex-box > div.form {
   border: 1px solid var(--primary);
   max-width: 500px;
+  width: 80%;
   background-color: var(--primary);
 }
 
