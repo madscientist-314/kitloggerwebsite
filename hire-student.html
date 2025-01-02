@@ -1,0 +1,240 @@
+<!-- GNU AGPLv3.0 2023 
+  Software: v0.2.8
+  Kit Logger - DofE Kit Management System
+  Copyright (C) 2023 Thomas Kirby
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program [LICENSE.txt].  If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <title>Home - Kit Logger</title>
+    <!--Width Scaling and Icon-->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://i.imgur.com/ERlryfF.png" />
+    <!--CSS External Stylesheet-->
+    <link rel="stylesheet" href="static/style.css" type="text/css" />
+    <!--Google Icons-->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
+</head>
+
+<nav>
+    <!--Navigation Bar-->
+    <div class="topnav">
+        <a href="https://madscientist-314.github.io/kitloggerwebsite/hire-student.html" style="float: left;">
+            <span class="material-symbols-outlined"> refresh </span>
+        </a>
+        <a href="https://madscientist-314.github.io/kitloggerwebsite/">
+            <span class="material-symbols-outlined" style="text-align: centre; font-size: 22px">
+                logout
+            </span>
+            </button>
+            <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs-student">
+                FAQs
+            </a>
+            <a href="https://madscientist-314.github.io/kitloggerwebsite/" class="active">
+                Hire </a>
+            <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7"></div>
+    </div>
+    <div class="dark-mode">
+        <button id="theme-toggle" class="themebutton">
+            <span class="material-symbols-outlined" id="themeIcon">
+                light_mode
+            </span>
+        </button>
+    </div>
+    <script>
+        var toggle = document.getElementById("theme-toggle");
+
+        var storedTheme =
+            localStorage.getItem("theme") ||
+            (window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light");
+
+        if (storedTheme)
+            document.documentElement.setAttribute("data-theme", storedTheme);
+
+        toggle.onclick = function () {
+            var currentTheme = document.documentElement.getAttribute("data-theme");
+            var targetTheme = "light";
+            document.getElementById("themeIcon").innerHTML = "dark_mode";
+
+            if (currentTheme === "light") {
+                targetTheme = "dark";
+                document.getElementById("themeIcon").innerHTML = "light_mode";
+            }
+
+            document.documentElement.setAttribute("data-theme", targetTheme);
+            localStorage.setItem("theme", targetTheme);
+        };
+    </script>
+</nav>
+
+<body>
+    <!--Main Content-->
+    <h1>Kit Logger</h1>
+    <sub>Student Hire</sub>
+    <p></p>
+    <script>
+        // Check if the URL contains ?true and hide the form div if it does
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = window.location.search;
+            const regex = /^\?true(&|$)/;
+
+            if (regex.test(queryString)) {
+                document.getElementById('internalHireForm').style.display = 'block';
+            } else {
+                document.getElementById('internalHireForm').style.display = 'none';
+                document.getElementById('form-div').innerHTML = 'Payment Incomplete. Please complete payment via parent pay. This page may take up to 24hr to update.';
+            }
+            // Extract the key from the URL
+            const key = urlParams.get('key');
+            if (key) {
+                // Make an AJAX request to the server with the key
+                fetch(`http://localhost:3003/get-user-details?key=${key}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Display the user's details on the page
+                        document.getElementById('name-display').innerText = data.name;
+                        document.getElementById('group-display').innerText = data.groupNumber;
+                        document.getElementById('expedition-display').innerText = data.expeditionLevel;
+                        document.getElementById('group-level-display').innerText = data.groupLevel;
+                        document.getElementById('group-size-display').innerText = data.groupSize;
+
+                        if (data.groupTent1 && data.groupTent2 && data.groupTent3) {
+                            const tent1 = document.createElement('p');
+                            tent1.innerText = `Group Tents: ${data.groupTent1 + ', ' + data.groupTent2 + ', ' + data.groupTent3}`;
+                            document.getElementById('details').appendChild(tent1);
+                        } else if (data.groupTent1 && data.groupTent2) {
+                            const tent1 = document.createElement('p');
+                            tent1.innerText = `Group Tents: ${data.groupTent1 + ', ' + data.groupTent2}`;
+                            document.getElementById('details').appendChild(tent1);
+                        } else if (data.groupTent1) {
+                            const tent1 = document.createElement('p');
+                            tent1.innerText = `Group Tent: ${data.groupTent1}`;
+                            document.getElementById('details').appendChild(tent1);
+                        }
+                        if (data.groupStove1 && data.groupStove2) {
+                            const stove1 = document.createElement('p');
+                            stove1.innerText = `Group Stoves: ${data.groupStove1 + ', ' + data.groupStove2}`;
+                            document.getElementById('details').appendChild(stove1);
+                        } else if (data.groupStove1) {
+                            const stove1 = document.createElement('p');
+                            stove1.innerText = `Group Stove: ${data.groupStove1}`;
+                            document.getElementById('details').appendChild(stove1);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user details:', error);
+                    });
+            }
+        };
+    </script>
+    <div class="flex-box" style="max-width: 90%">
+        <div class="form" id="form-div" style="text-align: center;">
+            <form class="hire" id="internalHireForm" type="_blank" action="http://localhost:3000/submit-loan-form"
+                method="POST">
+                <ul>
+                    <li>
+                        <p style="text-align: center; font-weight: 1000; font-size: 20px;">
+                            <b>Hire Form</b>
+                        </p>
+                    </li>
+                    <p for="studentName">Student Name: <span id="name-display"></span></p>
+                    <p for="groupNumber">Group #: <span id="group-display"></span></p>
+                    <p for="expeditionLevel">Expedition Level: <span id="expedition-display"></span></p>
+                    <p for="groupLevel">Group Level: <span id="group-level-display"></span></p>
+                    <p for="groupSize">Group Size: <span id="group-size-display"></span></p>
+                    <div id="details"></div>
+
+                    <p style="font-size: 70%; color: var(--grey)">*indicates a
+                        required field</p>
+
+                    <button class="hire" id="internalHireSubmit" type="submit" form="internalHireForm">Confirm</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <!--script>
+            const form = document.getElementById("internalHireForm");
+            form.addEventListener("submit", function (event) { // when the form is submitted
+                event.preventDefault(); // stop the form from submitting using html
+
+                const data = new FormData(form); // create a new FormData object
+                const jsonData = {};
+                data.forEach((value, key) => {
+                    jsonData[key] = value;
+                });
+                console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+
+                const xhr = new XMLHttpRequest(); // create a new XMLHttpRequest object
+                xhr.open("POST", "http://localhost:3003/submit-loan-form"); // open a new request
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr.onload = function () { // when the request is loaded
+                    console.log("Response received:", xhr.responseText); // Log the response from the server
+                    if (xhr.status === 200) { // if the request is successful
+                        const button = document.getElementById("externalHireSubmit").innerHTML = "Submitted"; // change the button text
+                        setTimeout(function () { // after 3 seconds
+                            button.innerHTML = "Submit"; // change the button text back
+                        }, 3000);
+                    } else {
+                        console.error('Error:', xhr.responseText); // Log the error response
+                        document.getElementById("error messages").style.display = "block"; // show the error message
+                    }
+                };
+                xhr.onerror = function () {
+                    console.error('Request failed'); // Log if the request fails
+                    document.getElementById("error messages").style.display = "block"; // show the error message
+                };
+                xhr.send(JSON.stringify(jsonData)); // send the form data
+                event.target.reset(); // reset the form
+            });
+        </script-->
+        <div id="error messages" class="accent" style="display: none;">
+            <span class="material-symbols-outlined">
+                error
+            </span>
+            <b>ERROR: </b> The form could not be submitted. Please try again.
+        </div>
+    </div>
+    </div>
+</body>
+
+<footer>
+    <br /><br /><br /><br /><br />
+    <div class="footer">
+        <!--Footer-->
+        <p style="color: #f5f5f1">
+            St Clement Danes School<br /><br />
+            <a class="button" href="https://www.stclementdanes.org.uk" target="_blank" rel="noopener noreferrer">Website
+            </a>
+            <a class="button" href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw" target="_blank"
+                rel="noopener noreferrer">Follow @SCDDofE
+            </a>
+            <script async src="https://platform.twitter.com/widgets.js"></script>
+            <!--https://publish.twitter.com/#-->
+            <br /><br />
+            Published under the GNU General Public
+            <a class="link" href="https://madscientist-314.github.io/kitloggerwebsite/licence.html">
+                Licence </a><br />
+        </p>
+    </div>
+</footer>
+
+</html>

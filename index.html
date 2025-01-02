@@ -135,23 +135,22 @@
         data.forEach((value, key) => {
           jsonData[key] = value;
         });
-        console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+        //console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
         xhrLogin.open("POST", "http://localhost:3003/submit-login-form"); // open a new request
         xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
         xhrLogin.onload = function () { // when the request is loaded
-          console.log("Response received:", xhrLogin.responseText); // Log the response from the server
           if (xhrLogin.status === 200) { // if the request is successful
-            console.log('Success:', xhrLogin.responseText); // Log the success response
+            console.log(xhrLogin.responseText); // Log the success response
+            var response = JSON.parse(xhrLogin.responseText); // Parse the response as JSON
+            window.location.href = "/hire-student.html?"+response.loan_paid+"&key="+response.encrypt_key; // Redirect to hire-student.html     
           } else {
             console.error('Error:', xhrLogin.responseText); // Log the error response
-            document.getElementById("error messages").style.display = "block"; // show the error message
           }
         };
         xhrLogin.onerror = function () {
           console.error('Request failed'); // Log if the request fails
-          document.getElementById("error messages").style.display = "block"; // show the error message
         };
         xhrLogin.send(JSON.stringify(jsonData)); // send the request with the form data as JSON
 

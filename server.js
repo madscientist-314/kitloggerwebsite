@@ -91,6 +91,17 @@ function verifyPassword(password, storedHash) {
   return bcrypt.compareSync(password, storedHash);
 }
 
+//Page authentication
+function isAuthenticated(req, res, next) {
+  if (req.session.userId) {
+    console.log('User is authenticated');
+    return next();
+  } else {
+    console.log('User is not authenticated');
+    res.status(401).send("Unauthorized");
+  }
+}
+
 const formData = [
   ["SCD-ST-L35", "Missing", "Rucksacks", "Endurance", "Mission 65", "Red", "65", 0, 0, 0, '2018-08-01', '121.56', "Endurance", '2024-01-10', '2021-01-10', 10, '2000-01-01', 0, ""],
   ["SCD-ST-L36", "Available", "Stoves", "Trangia", "Trangia 25-2/UL", "Silver", "M", 0, 0, 0, '2019-08-01', '130.00', "Trangia", '2025-01-10', '2022-01-10', 10, '2001-01-01', 0, ""]
@@ -98,6 +109,7 @@ const formData = [
 
 // Importing required modules
 const express = require("express"); // Express module
+const session = require("express-session"); // Session module
 const bodyParser = require("body-parser"); // Body parser module
 const nodemailer = require("nodemailer"); // Email module
 const cors = require("cors"); // Cross-origin resource sharing module
@@ -131,6 +143,12 @@ const config = {
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  secret: '$dj2!4$fnien.kfio-4547%fea', // Secret key for session
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 // Create a connection pool
 let poolPromise;
@@ -278,12 +296,10 @@ app.post("/submit-login-form", async (req, res) => {
   console.log("Form submission received"); // Log when the form is received
 
   const loginFormData = req.body;
-  console.log("Form data:", loginFormData); // Log the form data
+  //console.log("Form data:", loginFormData); // Log the form data
 
   const username = loginFormData["uname"];
   const password = loginFormData["psw"];
-  console.log("Username:", username);
-  console.log("Password:", password);
 
   //console.log(encryptPassword(password));
 
@@ -309,9 +325,14 @@ app.post("/submit-login-form", async (req, res) => {
     if (verifyPassword(password, storedHash)) {
       console.log("Login successful");
       console.log("User ID:", loginData.uid);
-      const kitHireData = await request.query("SELECT * FROM kit_hire WHERE user_id = " + loginData.uid);
-      console.log("Kit hire data:", kitHireData.recordset[0]);
-      return res.status(200).send("Login successful");
+      req.session.userId = loginData.uid; // Store user ID in session
+      req.session.save(err => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).send('Session save error');
+        }
+        return res.status(200).send(loginData);
+      });
     } else {
       console.log("Login failed: Incorrect password");
       return res.status(401).send("Login failed");
@@ -413,6 +434,98 @@ app.get("/kit-analysis", (req, res) => {
   
   res.send(result);
 
+});
+
+app.post("/submit-loan-form", (req, res) => {
+  console.log("Form submission received"); // Log when the form is received
+
+  const formData = req.body;
+  console.log("Form data:", formData); // Log the form data
+
+  // Creating a transporter object using SMTP transport
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'noreply.kitlogger@gmail.com', // Sender's email
+      pass: 'krwg eyqp qlhq ioln', // Email account app password
+    },
+  });
+
+  // Sending the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      return res.status(500).send(error.toString());
+    }
+    console.log('Email sent:', info.response);
+    return res.status(200).send("Email sent: " + info.response);
+  });
+});
+
+app.get("/get-user-details", async (req, res) => {
+  const key = req.query.key;
+
+  if (!key) {
+    return res.status(400).send('Key is required');
+  }
+
+  try {
+    const pool = await getConnection();
+    console.log('Database connection established');
+
+    const request = pool.request();
+    request.input('key', mssql.VarChar, key);
+    const query = `
+      SELECT 
+        login.username, 
+        login.group_id, 
+        login.exped_level, 
+        groups.group_level,
+        groups.group_size, 
+        groups.group_tent_1,
+        groups.group_tent_2,
+        groups.group_tent_3,
+        groups.group_stove_1,
+        groups.group_stove_2
+      FROM 
+        login
+      JOIN 
+        groups ON login.group_id = groups.group_id 
+      WHERE 
+        login.encrypt_key = @key
+    `;
+    const result = await request.query(query);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    const userData = result.recordset[0];
+    
+    const response = {
+      name: userData.username,
+      groupNumber: userData.group_id,
+      expeditionLevel: userData.exped_level,
+      groupLevel: userData.group_level,
+      groupSize: userData.group_size,
+    };
+    if (userData.group_tent_1) response.groupTent1 = userData.group_tent_1;
+    if (userData.group_tent_2) response.groupTent2 = userData.group_tent_2;
+    if (userData.group_tent_3) response.groupTent3 = userData.group_tent_3;
+    if (userData.group_stove_1) response.groupStove1 = userData.group_stove_1;
+    if (userData.group_stove_2) response.groupStove2 = userData.group_stove_2;
+    console.log(response);
+    res.json(response);
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Page security for internal hire
+app.get("/hire-student.html", isAuthenticated, (req, res) => {
+  console.log("Serving hire-student.html");
+  res.sendFile(__dirname + "/hire-student.html");
 });
 
 /*
