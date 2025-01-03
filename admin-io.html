@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.3
+  Software: v0.3.1
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -18,7 +18,7 @@
 -->
 <!DOCTYPE html>
 <html lang="en-EN">
-  <title>Manage - Kit Logger</title>
+  <title>Port - Kit Logger</title>
 
   <head>
     <!--Width Scaling and Icon-->
@@ -45,10 +45,10 @@
           logout
         </span>
       </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage" class="active">
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage">
         Manage
       </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/io">
+      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/io" class="active">
         Import
       </a>
       <a href="https://madscientist-314.github.io/kitloggerwebsite/admin">
@@ -91,76 +91,7 @@
 
   <body>
     <h1>Kit Logger</h1>
-    <sub>Manage</sub>
     <p></p>
-
-    <div class="container">
-      
-    </div>
-
-
-
-    <script>
-      // Create a "close" button and append it to each list item
-      var myNodelist = document.getElementsByTagName("LI");
-      var i;
-      for (i = 0; i < myNodelist.length; i++) {
-        var span = document.createElement("SPAN");
-        var txt = document.createTextNode("\u00D7");
-        span.className = "close";
-        span.appendChild(txt);
-        myNodelist[i].appendChild(span);
-      }
-
-      // Click on a close button to hide the current list item
-      var close = document.getElementsByClassName("close");
-      var i;
-      for (i = 0; i < close.length; i++) {
-        close[i].onclick = function () {
-          var div = this.parentElement;
-          div.style.display = "none";
-        };
-      }
-
-      // Add a "checked" symbol when clicking on a list item
-      var list = document.querySelector("ul");
-      list.addEventListener(
-        "click",
-        function (ev) {
-          if (ev.target.tagName === "LI") {
-            ev.target.classList.toggle("checked");
-          }
-        },
-        false
-      );
-
-      // Create a new list item when clicking on the "Add" button
-      function newElement() {
-        var li = document.createElement("li");
-        var inputValue = document.getElementById("myInput").value;
-        var t = document.createTextNode(inputValue);
-        li.appendChild(t);
-        if (inputValue === "") {
-          alert("You must write something!");
-        } else {
-          document.getElementById("myUL").appendChild(li);
-        }
-        document.getElementById("myInput").value = "";
-
-        var span = document.createElement("SPAN");
-        var txt = document.createTextNode("\u00D7");
-        span.className = "close";
-        span.appendChild(txt);
-        li.appendChild(span);
-
-        for (i = 0; i < close.length; i++) {
-          close[i].onclick = function () {
-            var div = this.parentElement;
-            div.style.display = "none";
-          };
-        }
-      }
-    </script>
   </body>
 
   <footer>

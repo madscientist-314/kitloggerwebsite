@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.8
+  Software: v0.3.1
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -42,13 +42,14 @@
             <span class="material-symbols-outlined" style="text-align: centre; font-size: 22px">
                 logout
             </span>
-            </button>
             <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs-student">
                 FAQs
             </a>
             <a href="https://madscientist-314.github.io/kitloggerwebsite/" class="active">
                 Hire </a>
-            <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7"></div>
+            <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7">
+
+            </div>
     </div>
     <div class="dark-mode">
         <button id="theme-toggle" class="themebutton">
@@ -98,7 +99,7 @@
                 document.getElementById(div).style.display = 'none'
             }
         }
-        
+
         // Check if the URL contains ?true and hide the form div if it does
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
@@ -107,9 +108,12 @@
 
             if (regex.test(queryString)) {
                 document.getElementById('flex-div').style.display = 'flex';
+                document.getElementById('hide-details').style.display = 'block';
             } else {
                 document.getElementById('internalHireForm').style.display = 'none';
-                document.getElementById('flex-div').style.display = 'block';
+                document.getElementById('hide-details').style.display = 'none';
+                document.getElementById('hide-details-1').style.display = 'none';
+                document.getElementById('flex-div').style.display = 'flex';
                 document.getElementById('form').innerHTML = 'Payment Incomplete. Please complete payment via parent pay. This page may take up to 24hr to update.';
             }
 
@@ -210,7 +214,7 @@
         };
     </script>
     <div class="flex-box" id="flex-div" style="max-width: 90%; display: none;">
-        <div class="secondary">
+        <div class="secondary" id="hide-details">
             <ul class="hire-student" id="student-info">
                 <h5 style="text-align: center;">Your Details</h5>
                 <p class="padded"><b>Student Name : </b><span id="name-display" class="color"></span></p>
@@ -220,7 +224,7 @@
                 <p class="padded"><b>Group Size : </b><span id="group-size-display" class="color"></span></p>
             </ul>
         </div>
-        <div class="accent">
+        <div class="accent" id="hide-details-1">
             <ul class="hire-student" id="student-info">
                 <h5>Group Information</h5>
                 <div id="details" style="text-align: center;"></div>
@@ -233,11 +237,14 @@
                     <li>
                         <h5>Kit Request</h5>
                         <p>Here you can request any additional kit you may need</p>
-                        <div class="horizonal-line" style="margin-top: 5px; margin-bottom: 8px; opacity: 0.9; background-color: var(--primary)"></div>
+                        <div class="horizonal-line"
+                            style="margin-top: 5px; margin-bottom: 8px; opacity: 0.9; background-color: var(--primary)">
+                        </div>
                     </li>
                     <li>
                         <label for="rucksacks" class="labelSize">Rucksack</label>
-                        <input class="checkbox" type="checkbox" id="rucksack" name="rucksack" onclick="divToggle('rucksack','rucksack-dropdown')">
+                        <input class="checkbox" type="checkbox" id="rucksack" name="rucksack"
+                            onclick="divToggle('rucksack','rucksack-dropdown')">
                         <div id="rucksack-dropdown" style="display: none;">
                             <select name="rucksackSize" id="rucksackSize" required>
                                 <option value="30">Day Sack</option>
@@ -254,7 +261,8 @@
                     </li>
                     <li>
                         <label for="Boots" class="labelSize">Boots</label>
-                        <input class="checkbox" type="checkbox" id="boots" name="boots" onclick="divToggle('boots','boots-size')">
+                        <input class="checkbox" type="checkbox" id="boots" name="boots"
+                            onclick="divToggle('boots','boots-size')">
                         <div id="boots-size" style="display: none;">
                             <select name="bootsSize" id="bootsSize" required>
                                 <option value="7">UK 7</option>
@@ -278,52 +286,52 @@
         <div id="detailsPersonal" class="accent" style="text-align: center; display: none;"></div>
         <script>
             document.getElementById("internalHireForm").addEventListener("submit", function (event) {
-              event.preventDefault(); // Prevent the default form submission
-          
-              const formData = new FormData(this);
-              const jsonData = {};
-              formData.forEach((value, key) => {
-                jsonData[key] = value;
-              });
-          
-              const key = new URLSearchParams(window.location.search).get('key');
-              jsonData.key = key;
-              console.log(jsonData);
+                event.preventDefault(); // Prevent the default form submission
 
-              fetch("http://localhost:3003/assign-kit", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(jsonData)
-              })
-                .then(response => response.json())
-                .then(data => {
-                  if (data.error) {
-                    console.error('Error:', data.error);
-                    return;
-                  }
-                  // Display the assigned kit details
-                  const detailsDiv = document.getElementById('detailsPersonal');
-                  detailsDiv.style.display = 'block';
-                  detailsDiv.innerHTML = ''; // Clear previous details
-
-                  console.log(data);
-          
-                  data.assignedKit.forEach(item => {
-                    const p = document.createElement('p');
-                    p.innerText = `${item.type}: ${item.qrCode.slice(-3)}`;
-                    detailsDiv.appendChild(p);
-                  });
-          
-                  // Hide the form
-                  //document.getElementById('internalHireForm').style.display = 'none';
-                })
-                .catch(error => {
-                  console.error('Error assigning kit:', error);
+                const formData = new FormData(this);
+                const jsonData = {};
+                formData.forEach((value, key) => {
+                    jsonData[key] = value;
                 });
+
+                const key = new URLSearchParams(window.location.search).get('key');
+                jsonData.key = key;
+                console.log(jsonData);
+
+                fetch("http://localhost:3003/assign-kit", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jsonData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Error:', data.error);
+                            return;
+                        }
+                        // Display the assigned kit details
+                        const detailsDiv = document.getElementById('detailsPersonal');
+                        detailsDiv.style.display = 'block';
+                        detailsDiv.innerHTML = ''; // Clear previous details
+
+                        console.log(data);
+
+                        data.assignedKit.forEach(item => {
+                            const p = document.createElement('p');
+                            p.innerText = `${item.type}: ${item.qrCode.slice(-3)}`;
+                            detailsDiv.appendChild(p);
+                        });
+
+                        // Hide the form
+                        //document.getElementById('internalHireForm').style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error assigning kit:', error);
+                    });
             });
-          </script>
+        </script>
         <div id="error messages" class="accent" style="display: none;">
             <span class="material-symbols-outlined">
                 error

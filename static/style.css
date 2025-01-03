@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.6
+  Software: v0.3.1
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -487,7 +487,7 @@ button.login-form {
   left: 0;
   top: 0;
   overflow: auto; /* Enable scroll if needed */
-  background-color: #00000000; /* Black w/ opacity */
+  background-color: #00000000; /* transparent */
   padding-top: 60px;
   height: 100%;
   width: 100%;
@@ -501,6 +501,10 @@ button.login-form {
   max-width: 800px;
   min-width: 300px;
   width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.modal-content > .container {
+  padding: 10px;
 }
 
 .close {
@@ -584,7 +588,7 @@ form.hire > ul > li {
 
 label {
   display: inline-block;
-  width: 25%;
+  width: 20%;
   text-align: right;
 }
 
@@ -668,13 +672,14 @@ span.analysisNumber{
 /* FlexBoxes */
 .flex-box {
   display: flex;
+  flex-wrap: wrap;
   margin: auto;
   max-width: 1200px;
   width: 95%;
+  gap: 10px;
   flex-direction: row;
   justify-content: space-evenly;
-  align-items: stretch;
-  flex-wrap: wrap;
+  align-items: flex-start;
   padding: 10px;
   background-color: var(--white);
   border-radius: 25px;
@@ -687,6 +692,7 @@ span.analysisNumber{
 .flex-box > div.form {
   font-family: var(--font);
   display: flex;
+  flex-direction: column;
   max-width: 370px;
   height: auto;
   padding: 6px;
@@ -890,24 +896,28 @@ html[data-theme="dark"] {
   white-space: nowrap;
 }
 
+/* QR Popup Styles */
 .QRpopup {
-  display: none;
-  position: fixed;
-  z-index: 1;
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0,0,0,0.7);
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
 }
 
 .QRpopup-content {
   background-color: var(--background);
-  margin: 15% auto;
+  margin: 5% auto; /* 15% from the top and centered */
   padding: 20px;
-  border: 1px solid var(--accent);
-  width: 80%;
+  border: 5px solid var(--primary);
+  width: 80%; /* Could be more or less, depending on screen size */
   max-width: 600px;
+  border-radius: 10px;
 }
 

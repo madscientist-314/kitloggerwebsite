@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.2.6
+  Software: v0.3.1
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -572,6 +572,32 @@ app.get("/get-user-details", async (req, res) => {
 app.get("/hire-student.html", isAuthenticated, (req, res) => {
   console.log("Serving hire-student.html");
   res.sendFile(__dirname + "/hire-student.html");
+});
+
+app.get("/qr-code", async (req, res) => {
+  const qrCode = req.query.code;
+
+  if (!qrCode) {
+    return res.status(400).json({ error: 'QR code is required' });
+  }
+
+  try {
+    // Process the QR code (e.g., look up information in the database)
+    const pool = await getConnection();
+    const request = pool.request();
+    request.input('qrCode', mssql.VarChar, qrCode);
+    const result = await request.query("SELECT * FROM kit_data WHERE contents_of_qr_code = @qrCode");
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: 'QR code not found' });
+    }
+
+    const data = result.recordset[0];
+    res.json(data);
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 /*

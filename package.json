@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/madscientist-314/kitloggerwebsite/issues"
   },
-  "homepage": "https://github.com/madscientist-314/kitloggerwebsite#readme"
+  "homepage": "https://github.com/madscientist-314/kitloggerwebsite#readme",
+  "devDependencies": {
+    "html5-qrcode": "^2.3.8"
+  }
 }

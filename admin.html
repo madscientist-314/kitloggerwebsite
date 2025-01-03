@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.6
+  Software: v0.3.1
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -30,8 +30,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 
 <nav>
@@ -92,12 +91,44 @@
       document.documentElement.setAttribute("data-theme", targetTheme);
       localStorage.setItem("theme", targetTheme);
     };
+  </script>
+</nav>
 
-    function QRPopup(page) {
+<body>
+  <h1>Kit Logger</h1>
+  <sub>Overview</sub><br><br>
+
+  <div id="qrPopup" class="QRpopup" style="display: none;">
+    <div class="QRpopup-content">
+      <span class="close" onclick="closeQRPopup()">&times;</span>
+      <h5 id="qrLoad" style="text-align: center;">loading...</h5><br>
+      <div id="qr">
+        <video id="qrReader" width="80%"></video>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let qrCodeScanner;
+
+    // Close QR Popup function
+    function closeQRPopup() {
+      document.getElementById('qrPopup').style.display = 'none';
+      if (qrCodeScanner) {
+        qrCodeScanner.stop().then(ignore => {
+          console.log("QR Code scanner stopped.");
+        }).catch(err => {
+          console.error("Unable to stop QR Code scanner.", err);
+        });
+      }
+    }
+
+    // Open QR Popup function
+    function QRPopup() {
       var popup = document.getElementById('qrPopup');
       popup.style.display = 'block';
 
-      var qrCodeScanner = new Html5Qrcode("qr");
+      qrCodeScanner = new Html5Qrcode("qr");
       qrCodeScanner.start(
         { facingMode: "environment" }, // Use the rear camera
         {
@@ -106,49 +137,55 @@
         },
         qrCodeMessage => {
           console.log(`QR Code detected: ${qrCodeMessage}`);
-          // Handle the QR code message (e.g., navigate to the URL)
-          window.location.href = qrCodeMessage;
+          document.getElementById('qrLoad').innerText = 'QR Code detected. Sending to server...';
+          qrCodeScanner.pause(true); // Pause the scanner
+
+          // Send a GET request to the server with the decoded QR code text
+          fetch(`https://5fb1-81-78-211-83.ngrok-free.app/qr-code?code=${encodeURIComponent(qrCodeMessage)}`, {
+            headers: {
+              'ngrok-skip-browser-warning': 'true'
+            }
+          }) //run ngrok start --all and copy the https link for port 3003
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text();
+            })
+            .then(text => {
+              try {
+                const data = JSON.parse(text); // Try to parse the response as JSON
+                console.log('Server response:', data);
+                alert('QR Scanned');
+
+
+                qrCodeScanner.stop();
+                closeQRPopup();
+              } catch (error) {
+                console.error('Error parsing JSON:', error);
+                document.getElementById('qrLoad').innerText = 'Error parsing server response';
+              }
+            })
+            .catch(error => {
+              console.error('Error sending QR code to server:', error);
+              document.getElementById('qrLoad').innerText = 'Error sending QR code to server';
+            });
         },
         errorMessage => {
           console.error(`QR Code scanning error: ${errorMessage}`);
+          // Update the loading text
+          document.getElementById('qrLoad').innerText = 'QR Scanner is ready. Please scan a QR code.';
         }
       ).catch(err => {
         console.error(`Unable to start QR Code scanner: ${err}`);
-      });
-    }
-
-    function closeQRPopup() {
-      var popup = document.getElementById('qrPopup');
-      popup.style.display = 'none';
-      Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-          var qrCodeScanner = new Html5Qrcode("qr");
-          qrCodeScanner.stop().then(ignore => {
-            console.log("QR Code scanner stopped.");
-          }).catch(err => {
-            console.error(`Unable to stop QR Code scanner: ${err}`);
-          });
+        if (err === 'Error getting userMedia, error = NotAllowedError: Permission denied') {
+          document.getElementById('qrLoad').innerText = 'Please allow camera access';
+        } else {
+          document.getElementById('qrLoad').innerText = `Unable to start QR Code scanner: ${err}`;
         }
-      }).catch(err => {
-        console.error(`Unable to get cameras: ${err}`);
       });
     }
   </script>
-</nav>
-
-<body>
-  <h1>Kit Logger</h1>
-  <sub>Overview</sub><br><br>
-
-  <div id="qrPopup" class="QRpopup">
-    <div class="QRpopup-content">
-      <span class="close" onclick="closeQRPopup()">&times;</span>
-      <h2>QR Scanner</h2>
-      <div id="qr">
-        <!-- QR Scanner will be initialized here -->
-      </div>
-    </div>
-  </div>
 
   <span id="categoryChange" style="display: none;"></span>
   <script>
@@ -249,7 +286,8 @@
       document.getElementById('analyseButton').addEventListener('click', function () {
         console.log('Analysing kit...');
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://localhost:3003/kit-analysis', true);
+        xhr.open('GET', 'https://5fb1-81-78-211-83.ngrok-free.app/kit-analysis', true);
+        xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
         xhr.onload = function () {
           if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
@@ -284,7 +322,8 @@
             div.style.display = 'flex';
             document.getElementById(category).style.color = 'var(--primary)';
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `http://localhost:3003/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
+            xhr.open('GET', `https://5fb1-81-78-211-83.ngrok-free.app/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
+            xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
             xhr.onload = function () {
               if (xhr.status === 200) {
                 const data = JSON.parse(xhr.responseText);
@@ -317,17 +356,17 @@
       All Data</button>
   </div>
   <div class="searchBarContainer">
-    <label for="categorySelect" class="categoryLabel">Sort by:</label>
+    <label for="categorySelect" class="categoryLabel" style="width: auto;">Search:</label>
     <select name="Category" id="categorySelect" class="categorySelect">
       <option value="contents_of_qr_code">ID</option>
       <option value="category">Category</option>
       <option value="status">Status</option>
       <!--option value="on_loan">On Loan</option-->
     </select>
-  
-  <input type="text" id="searchBox" placeholder="Enter Search..." class="search-bar">
 
-  <button class="searchBarSubmit" id="searchSubmit">Search</button>
+    <input type="text" id="searchBox" placeholder="Enter Search..." class="search-bar">
+
+    <button class="searchBarSubmit" id="searchSubmit">Search</button>
   </div>
   <div id="dataContainer" class="tableContainer"></div>
   </div>
@@ -392,7 +431,8 @@
 
     document.getElementById('fetchDataButton').addEventListener('click', function () {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'http://localhost:3003/fetch-data', true);
+      xhr.open('GET', 'https://5fb1-81-78-211-83.ngrok-free.app/fetch-data', true);
+      xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
@@ -409,24 +449,27 @@
       xhr.send();
     });
 
-    document.getElementById('searchForm').addEventListener('submit', function (event) {
-      event.preventDefault();
-      var searchRequest = document.getElementById('searchBox').value;
-      var category = document.getElementById('category').value;
-      if (!searchRequest || !category) {
-        console.error('Search query and category are required');
+    document.getElementById('searchSubmit').addEventListener('click', function () {
+      const category = document.getElementById('categorySelect').value;
+      const searchTerm = document.getElementById('searchBox').value.trim();
+
+      if (!searchTerm) {
+        console.error('Search term is required');
         return;
       }
-      console.log('Search request:', searchRequest, 'Category:', category);
+
+      console.log(`Searching for ${searchTerm} in ${category}...`);
+
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `http://localhost:3003/search-data?search=${encodeURIComponent(searchRequest)}&category=${encodeURIComponent(category)}`, true);
+      xhr.open('GET', `https://5fb1-81-78-211-83.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
+      xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
-          console.log('Search data received:', data);
+          console.log('Search results received:', data);
           formatData(data, 'search');
         } else {
-          console.error('Error fetching data:', xhr.responseText);
+          console.error('Error fetching search results:', xhr.responseText);
         }
       };
       xhr.onerror = function () {
@@ -434,7 +477,6 @@
       };
       xhr.send();
     });
-
   </script>
 </body>
 
