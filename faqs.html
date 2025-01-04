@@ -39,7 +39,7 @@
 <nav>
   <!--Navigation Bar-->
   <div class="topnav">
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/hire" style="float: left;">
+    <a href="/kitloggerwebsite/faqs" style="float: left;">
       <span class="material-symbols-outlined"> refresh </span>
     </a>
     <button onclick="document.getElementById('login').style.display='block'" class="login-button">
@@ -47,16 +47,16 @@
         account_circle
       </span>
     </button>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/contact">
+    <a href="/kitloggerwebsite/contact">
       Contact
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs" class="active">
+    <a href="/kitloggerwebsite/faqs">
       FAQs
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/hire">
+    <a href="/kitloggerwebsite/hire">
       Hire
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/">
+    <a href="/kitloggerwebsite/" class="active">
       Home </a>
     <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7"></div>
   </div>
@@ -100,20 +100,17 @@
   <div id="login" class="modal">
     <!-- Modal Content -->
     <form class="modal-content animate" id="login-form">
-
       <div class="container">
-        <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div></span>
+        <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div>
         <label for="uname"><b>Username</b></label>
         <input type="text" placeholder="Enter Username" name="uname" required>*
 
         <label for="psw"><b>Password</b></label>
         <input type="password" placeholder="Enter Password" name="psw" required>*
 
-        <label for="checkbox" style="width: 120px;" class="free">Remember
-          me</label>
+        <label for="checkbox" style="width: 120px;" class="free">Remember me</label>
         <input type="checkbox" checked="checked" name="remember" class="checkbox">
-        <br><label class="free"><a href="#" class="psw">Forgot
-            password?</a></label><br>
+        <br><label class="free"><a href="#" class="psw">Forgot password?</a></label><br>
         <button type="submit" class="login-form" style="float: left;">Login</button>
         <button type="button" onclick="document.getElementById('login').style.display='none'" class="login-form"
           style="float: right;">Cancel</button>
@@ -132,15 +129,33 @@
           document.getElementById("login-form").reset();
         }
       }
-      const form = document.getElementById("login-form");
-      form.addEventListener("submit", function (event) { // when the form is submitted
+      // Get the form
+      const loginform = document.getElementById("login-form");
+      loginform.addEventListener("submit", function (event) { // when the form is submitted
         event.preventDefault(); // stop the form from submitting using html
-        const data = new FormData(form); // create a new FormData object
+        const data = new FormData(loginform); // create a new FormData object
         const jsonData = {};
         data.forEach((value, key) => {
           jsonData[key] = value;
         });
-        console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+        //console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+
+        const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
+        xhrLogin.open("POST", "https://b3ab-81-78-211-83.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
+        xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
+        xhrLogin.onload = function () { // when the request is loaded
+          if (xhrLogin.status === 200) { // if the request is successful
+            console.log(xhrLogin.responseText); // Log the success response
+            var response = JSON.parse(xhrLogin.responseText); // Parse the response as JSON
+            window.location.href = "/kitloggerwebsite/hire-student?" + response.loan_paid + "&key=" + response.encrypt_key; // Redirect to hire-student.html     
+          } else {
+            console.error('Error:', xhrLogin.responseText); // Log the error response
+          }
+        };
+        xhrLogin.onerror = function () {
+          console.error('Request failed'); // Log if the request fails
+        };
+        xhrLogin.send(JSON.stringify(jsonData)); // send the request with the form data as JSON
 
         event.target.reset();
       });
@@ -198,8 +213,9 @@
     </div>
     <div class="primary">
       <h5>How do I log onto eDofE?</h5>
-      Watch <a href="https://www.youtube.com/watch?v=nvjhV3V3EVA&feature=youtu.be">this</a>
-      video
+      <p>
+        Watch <a href="https://www.youtube.com/watch?v=nvjhV3V3EVA&feature=youtu.be">this</a> video
+      </p>
     </div>
     <div class="secondary">
       <h5>When will I get my eDofE account and Welcome pack?</h5>
@@ -211,129 +227,126 @@
       </p>
     </div>
     <div class="accent">
-      I'm having trouble logging in for the first time?
+      <h5>I'm having trouble logging in for the first time?</h5>
+      <p>
+        Once your parents have made the payment on ParentPay an account will be set up for you using your school email
+        address. Check for a welcome email in here with your username and password. If you can't access your school
+        email please visit the IT team (upstairs in MFL block) to get you set up.
+      </p>
+    </div>
 
-      Once your parents have made the payment on ParentPay an account will
-      be set up for you using your school email address. Check for a welcome
-      email in here with your username and password. If you cant access your
-      school email please visit the IT team (upstairs in MFL block) to get
-      you set up.
+    <div class="primary">
+      <h5>Who can I use for my assessor?</h5>
+      <p>
+        Anyone over 18 who is not related to you AND has an area of interest or expertise. For example, a PE teacher for
+        the Physical section or the person you are helping (but not a relative) for the Volunteering section.
+      </p>
+    </div>
 
-      Who can I use for my assessor?
+    <div class="secondary">
+      <p>
+        Teachers and Form tutors are always happy to help be assessors. Please ask them BEFORE you start. If in doubt,
+        check with a DofE Leader.
+      </p>
+    </div>
 
-      Anyone over 18, who is not related to you AND has an area of interest
-      or expertise
+    <div class="accent">
+      <h5>What can I do for the Volunteering, Physical or Skills section?</h5>
+      <p>
+        Go to the DofE website for ideas or have a look at the following:</p>
+      <ul>
+        <li>Volunteering</li>
+        <li>Physical</li>
+        <li>Skill</li>
+      </ul>
+    </div>
 
-      e.g. Physical section -PE teacher, Volunteering - the person you are
-      helping but not a relative
+    <div class="primary">
+      <h5>I don't know my assessor's email or phone number?</h5>
+      <p>
+        This is a non-compulsory field so submit sections for approval with those fields empty.
+      </p>
+    </div>
 
-      Teachers and Form tutors are always happy to help be assessors -
-      Please ask them BEFORE you start
+    <div class="secondary">
+      <h5>How do I get my assessor to submit an assessors report?</h5>
+      <p>
+        Ask them to go to the Assessor Portal. Give them your eDofE ID number - this can be found on the top left-hand
+        side when you log into eDofE. Share with them the following "How to" guidance document and "what a report should
+        consist of" document.
+      </p>
+    </div>
 
-      If in doubt check with a DofE Leader
+    <div class="accent">
+      <h5>How many in an expedition group?</h5>
+      <p>
+        Group sizes of 7. The aim is for students to get themselves into either a group of 3 or a group of 4. We will
+        then put a group 3 and a group of 4 together to make up a group of 7. (Sometimes groups of 5 and 6 will be made
+        but when we have large numbers at Bronze and Silver we try to minimise the number of groups.)
+      </p>
+    </div>
 
-      What can I do for the Volunteering, Physical or Skills section?
+    <div class="primary">
+      <h5>When is my expedition?</h5>
+      <p>
+        Check out the dates on the expedition page or calendar.
+      </p>
+    </div>
 
-      Go to the DofE website for ideas
+    <div class="secondary">
+      <h5>Why hasn’t my activity been approved?</h5>
+      <p>
+        Leaders are all volunteers so it may take them some time to log on and check. Give it a couple of weeks. In the
+        meantime, check the notifications on eDofE. If a section or piece of evidence has been queried you will have a
+        message from the person who queried it with a reason.
+      </p>
+    </div>
 
-      Or have a look at the following:
+    <div class="accent">
+      <p>
+        The usual reasons are:
+      <ul>
+        <li>Time commitment not 1 hour per week for 13 weeks (3 months)</li>
+        <li>Time commitment not 1 hour per week for 26 weeks (6 months)</li>
+        <li>Time commitment not 1 hour per week for 52 weeks (12 months)</li>
+        <li>Time commitment not 1 hour per week for 78 weeks (18 months)</li>
+        <li>Assessor is related to you</li>
+        <li>The activity chosen doesn't meet the requirements for that section (e.g. a sport in the skill section or
+          working for a company in the volunteering section)</li>
+        <li>The assessor hasn’t written about what you achieved</li>
+        <li>The name of the assessor doesn’t match the name on your plan – in this case please revert to draft amend the
+          plan and resubmit</li>
+        <li>The assessor report has been uploaded incorrectly</li>
+        <li>The assessors reports must be written on the record book sent home, photographed with ALL details completed
+          OR the assessor goes to www.edofe.org/assessor and uses your eDofE ID to register your report</li>
+      </ul>
+      </p>
+    </div>
 
-      Volunteering
+    <div class="primary">
+      <h5>What equipment do I need for expedition?</h5>
+      <p>
+        Kit list can be found here.
+      </p>
+    </div>
 
-      Physical
+    <div class="secondary">
+      <h5>How do I set up and link an OS maps account to eDofE.</h5>
+      <p>
+        Please read through the set up guide here. Watch the video of how to plan a route here. Full list of DofE
+        Video's can be found here. DofE website.
+      </p>
+    </div>
 
-      Skill
-
-      I don't know my assessor's email or phone number?
-
-      This is a non-compulsory field so submit sections for approval with
-      those fields empty
-
-      How do I get my assessor to submit an assessors report?
-
-      Ask them to go to the Assessor Portal
-
-      Give them your eDofE ID number - this can be found on the top left
-      hand side when you log into eDofE
-
-      Share with them the following "How to " guidance document and
-      "what a report should consist of" document.
-
-      How many in an expedition group?
-
-      Group sizes of 7.
-
-      The aim is for students to get themselves into either a group of 3 or
-      a group of 4.
-
-      We will then put a group 3 and a group of 4 together to make up a
-      group of 7.
-
-      (Sometimes groups of 5 and 6 will be made but when we have large
-      numbers at Bronze and Silver we try to minimise the number of groups.)
-
-      When is my expedition?
-
-      Check out the dates on the expedition page or calendar
-
-      Why hasn’t my activity been approved?
-
-      Leaders are all volunteers it may take them some time to log on and
-      check give it a couple of weeks - in the meantime check the
-      notifications on eDofE – if a section or piece of evidence has been
-      queried you will have a message from the person who queried it with a
-      reason.
-
-      The usual reasons are:
-
-      Time commitment not 1 hour per week for 13 weeks (3 months)
-
-      Time commitment not 1 hour per week for 26 weeks (6 months)
-
-      Time commitment not 1 hour per week for 52 weeks (12 months)
-
-      Time commitment not 1 hour per week for 78 weeks (18 months)
-
-      Assessor is related to you
-
-      The activity chosen doesn't meet the requirements for tat section e.g.
-      a sport in the skill section or working for a company in the
-      volunteering section
-
-      The assessor hasn’t written about what you achieved
-
-      The name of the assessor doesn’t match the name on your plan – in this
-      case please revert to draft amend the plan and resubmit
-
-      The assessor report has been uploaded incorrectly
-
-      The assessors reports must be written on the record book sent home,
-      photographed with ALL details completed OR
-
-      The assessor goes to www.edofe.org/assessor and uses your eDofE ID to
-      register your report
-
-      What equipment do I need for expedition?
-
-      Kit list can be found here
-
-      How do I set up and link an OS maps account to eDofE.
-
-      Please read through the set up guide here.
-
-      Watch the video of how to plan a route here.
-
-      Full list of DofE Video's can be found here.
-
-      DofE website
-
-      How do I know which sections have been approved?
-
-      You can now see your achievements on eDofE. Please log on and go to
-      the tab "My achievements" and it ill show you hat sectional
-      certificates you have and whether you have completed your hole award.
-      If you click on completed certificates you also have the option to
-      download and print a copy of the certificate.</p>
+    <div class="accent">
+      <h5>How do I know which sections have been approved?</h5>
+      <p>
+        You can now see your achievements on eDofE. Please log on and go to the tab "My achievements" and it will show
+        you what sectional certificates you have and whether you have completed your whole award. If you click on
+        completed certificates you also have the option to download and print a copy of the certificate.
+      </p>
+    </div>
+  </div>
 </body>
 
 <footer>

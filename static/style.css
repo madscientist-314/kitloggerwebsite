@@ -634,6 +634,14 @@ form.hire>ul {
   margin: 0;
 }
 
+/* Update list items to have the same font size as p elements */
+li {
+  font-size: 0.750rem; /* 12px */
+  font-weight: 400;
+  font-family: var(--font);
+  color: var(--black);
+}
+
 ul.hire-student {
   flex-wrap: wrap;
   justify-content: space-evenly;
@@ -740,7 +748,6 @@ span.analysisNumber {
   max-width: 1200px;
   width: 95%;
   gap: 10px;
-  flex-direction: row;
   justify-content: space-evenly;
   align-items: flex-start;
   padding: 10px;
@@ -748,18 +755,13 @@ span.analysisNumber {
   border-radius: 25px;
 }
 
-.flex-box>div.accent,
-.flex-box>div.secondary,
-.flex-box>div.primary,
-.flex-box>div.warning,
-.flex-box>div.form {
+.flex-box>div {
   font-family: var(--font);
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 200px;
   max-width: 370px;
   height: auto;
-  padding: 6px;
-  margin: 3px;
+  padding: 10px;
+  margin: 5px;
   position: relative;
   text-align: justify;
   border-radius: 5px;

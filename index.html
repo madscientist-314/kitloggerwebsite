@@ -35,7 +35,7 @@
 <nav>
   <!--Navigation Bar-->
   <div class="topnav">
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/" style="float: left;">
+    <a href="/kitloggerwebsite/" style="float: left;">
       <span class="material-symbols-outlined"> refresh </span>
     </a>
     <button onclick="document.getElementById('login').style.display='block'" class="login-button">
@@ -43,16 +43,16 @@
         account_circle
       </span>
     </button>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/contact">
+    <a href="/kitloggerwebsite/contact">
       Contact
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs">
+    <a href="/kitloggerwebsite/faqs">
       FAQs
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/hire">
+    <a href="/kitloggerwebsite/hire">
       Hire
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/" class="active">
+    <a href="/kitloggerwebsite/" class="active">
       Home </a>
     <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7"></div>
   </div>
@@ -126,10 +126,10 @@
         }
       }
       // Get the form
-      const form = document.getElementById("login-form");
-      form.addEventListener("submit", function (event) { // when the form is submitted
+      const loginform = document.getElementById("login-form");
+      loginform.addEventListener("submit", function (event) { // when the form is submitted
         event.preventDefault(); // stop the form from submitting using html
-        const data = new FormData(form); // create a new FormData object
+        const data = new FormData(loginform); // create a new FormData object
         const jsonData = {};
         data.forEach((value, key) => {
           jsonData[key] = value;
@@ -143,7 +143,7 @@
           if (xhrLogin.status === 200) { // if the request is successful
             console.log(xhrLogin.responseText); // Log the success response
             var response = JSON.parse(xhrLogin.responseText); // Parse the response as JSON
-            window.location.href = "/hire-student?"+response.loan_paid+"&key="+response.encrypt_key; // Redirect to hire-student.html     
+            window.location.href = "/kitloggerwebsite/hire-student?"+response.loan_paid+"&key="+response.encrypt_key; // Redirect to hire-student.html     
           } else {
             console.error('Error:', xhrLogin.responseText); // Log the error response
           }

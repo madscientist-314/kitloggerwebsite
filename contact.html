@@ -35,7 +35,7 @@
 <nav>
   <!--Navigation Bar-->
   <div class="topnav">
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/contact" style="float: left;">
+    <a href="/kitloggerwebsite/contact" style="float: left;">
       <span class="material-symbols-outlined"> refresh </span>
     </a>
     <button onclick="document.getElementById('login').style.display='block'" class="login-button">
@@ -43,16 +43,16 @@
         account_circle
       </span>
     </button>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/contact" class="active">
+    <a href="/kitloggerwebsite/contact">
       Contact
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/faqs">
+    <a href="/kitloggerwebsite/faqs">
       FAQs
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/hire">
+    <a href="/kitloggerwebsite/hire">
       Hire
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/">
+    <a href="/kitloggerwebsite/" class="active">
       Home </a>
     <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7"></div>
   </div>
@@ -96,9 +96,8 @@
   <div id="login" class="modal">
     <!-- Modal Content -->
     <form class="modal-content animate" id="login-form">
-
       <div class="container">
-        <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div></span>
+        <div class="material-symbols-outlined" style="margin: auto; display: flex;">Person</div>
         <label for="uname"><b>Username</b></label>
         <input type="text" placeholder="Enter Username" name="uname" required>*
 
@@ -126,15 +125,33 @@
           document.getElementById("login-form").reset();
         }
       }
-      const form = document.getElementById("login-form");
-      form.addEventListener("submit", function (event) { // when the form is submitted
+      // Get the form
+      const loginform = document.getElementById("login-form");
+      loginform.addEventListener("submit", function (event) { // when the form is submitted
         event.preventDefault(); // stop the form from submitting using html
-        const data = new FormData(form); // create a new FormData object
+        const data = new FormData(loginform); // create a new FormData object
         const jsonData = {};
         data.forEach((value, key) => {
           jsonData[key] = value;
         });
-        console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+        //console.log("Form data as JSON:", jsonData); // Log the form data as JSON
+
+        const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
+        xhrLogin.open("POST", "https://b3ab-81-78-211-83.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
+        xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
+        xhrLogin.onload = function () { // when the request is loaded
+          if (xhrLogin.status === 200) { // if the request is successful
+            console.log(xhrLogin.responseText); // Log the success response
+            var response = JSON.parse(xhrLogin.responseText); // Parse the response as JSON
+            window.location.href = "/kitloggerwebsite/hire-student?" + response.loan_paid + "&key=" + response.encrypt_key; // Redirect to hire-student.html     
+          } else {
+            console.error('Error:', xhrLogin.responseText); // Log the error response
+          }
+        };
+        xhrLogin.onerror = function () {
+          console.error('Request failed'); // Log if the request fails
+        };
+        xhrLogin.send(JSON.stringify(jsonData)); // send the request with the form data as JSON
 
         event.target.reset();
       });
@@ -144,6 +161,7 @@
   <!--Main Content-->
   <h1>Kit Logger</h1>
   <p></p>
+  <a href="mailto:dofe@scd.herts.sch.uk" target="_blank">Contact</a>
 </body>
 
 <footer>

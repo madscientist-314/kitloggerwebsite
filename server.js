@@ -34,21 +34,21 @@ function writeKitData(request, writeQuery) {
       next_inspection_date, last_inspection_date, working_life_in_years, 
       retirement_date, on_loan, notes
     ) VALUES `;
-  
-    for (let i = 0; i < writeQuery.length; i++) {
-      query += `('${writeQuery[i].join("', '")}')`;
-      if (i < writeQuery.length - 1) {
-        query += ', ';
-      }
+
+  for (let i = 0; i < writeQuery.length; i++) {
+    query += `('${writeQuery[i].join("', '")}')`;
+    if (i < writeQuery.length - 1) {
+      query += ", ";
     }
-  
-    query += ';';
-    
+  }
+
+  query += ";";
+
   request.batch(query, (err, result) => {
     if (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
     } else {
-      console.log('Result:', result);
+      console.log("Result:", result);
     }
   });
 }
@@ -94,17 +94,57 @@ function verifyPassword(password, storedHash) {
 //Page authentication
 function isAuthenticated(req, res, next) {
   if (req.session.userId) {
-    console.log('User is authenticated');
+    console.log("User is authenticated");
     return next();
   } else {
-    console.log('User is not authenticated');
+    console.log("User is not authenticated");
     res.status(401).send("Unauthorized");
   }
 }
 
 const formData = [
-  ["SCD-ST-L35", "Missing", "Rucksacks", "Endurance", "Mission 65", "Red", "65", 0, 0, 0, '2018-08-01', '121.56', "Endurance", '2024-01-10', '2021-01-10', 10, '2000-01-01', 0, ""],
-  ["SCD-ST-L36", "Available", "Stoves", "Trangia", "Trangia 25-2/UL", "Silver", "M", 0, 0, 0, '2019-08-01', '130.00', "Trangia", '2025-01-10', '2022-01-10', 10, '2001-01-01', 0, ""]
+  [
+    "SCD-ST-L35",
+    "Missing",
+    "Rucksacks",
+    "Endurance",
+    "Mission 65",
+    "Red",
+    "65",
+    0,
+    0,
+    0,
+    "2018-08-01",
+    "121.56",
+    "Endurance",
+    "2024-01-10",
+    "2021-01-10",
+    10,
+    "2000-01-01",
+    0,
+    "",
+  ],
+  [
+    "SCD-ST-L36",
+    "Available",
+    "Stoves",
+    "Trangia",
+    "Trangia 25-2/UL",
+    "Silver",
+    "M",
+    0,
+    0,
+    0,
+    "2019-08-01",
+    "130.00",
+    "Trangia",
+    "2025-01-10",
+    "2022-01-10",
+    10,
+    "2001-01-01",
+    0,
+    "",
+  ],
 ];
 
 // Importing required modules
@@ -114,8 +154,12 @@ const bodyParser = require("body-parser"); // Body parser module
 const nodemailer = require("nodemailer"); // Email module
 const cors = require("cors"); // Cross-origin resource sharing module
 const mssql = require("mssql"); // Database connection module
-const bcrypt = require('bcrypt'); // Password hashing module
-const QrScanner = require('qr-scanner'); // QR code scanner module
+const bcrypt = require("bcrypt"); // Password hashing module
+const QrScanner = require("qr-scanner"); // QR code scanner module
+const fileUpload = require("express-fileupload"); // File upload module
+const fs = require("fs"); // File system module
+const csv = require("csv-parser"); // CSV parser module
+const path = require("path"); // Path module
 
 // Setting up the server
 const app = express();
@@ -142,23 +186,44 @@ const config = {
 
 // Middleware to parse JSON and URL-encoded data
 app.use(cors());
+app.use(fileUpload());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-  secret: '$dj2!4$fnien.kfio-4547%fea', // Secret key for session
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // Set to true if using HTTPS
-}));
+app.use(
+  session({
+    secret: "$dj2!4$fnien.kfio-4547%fea", // Secret key for session
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }, // Set to true if using HTTPS
+  })
+);
 
-// Create a connection pool
-let poolPromise;
-async function getConnection() {
-  if (!poolPromise) {
-    poolPromise = mssql.connect(config); // Connect to the database
+// Ensure the uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+};
+
+const formatDate = (dateString) => {
+  if (!dateString || dateString === "NULL") return null;
+  const [year, month, day] = dateString.split("-");
+  return `${year}-${month}-${day}`;
+};
+
+const getConnection = async (retries = 5) => {
+  while (retries) {
+    try {
+      const pool = await mssql.connect(config);
+      return pool;
+    } catch (err) {
+      console.error("Database connection error:", err);
+      retries -= 1;
+      console.log(`Retries left: ${retries}`);
+      if (!retries) throw err;
+      await new Promise((res) => setTimeout(res, 5000)); // Wait 5 seconds before retrying
+    }
   }
-  return poolPromise;
-} // outside of the app.get("/", (req, res) => { ... }) function to avoid multiple connections (CONNRESET error)
+};
 
 // Handle form submissions
 app.post("/submit-form", (req, res) => {
@@ -167,7 +232,24 @@ app.post("/submit-form", (req, res) => {
   const formData = req.body;
   console.log("Form data:", formData); // Log the form data
 
-  emailMessage = formData["userName"] + " has requested to hire kit for " + formData["event"] + " from " + formData["startDate"] + " to " + formData["endDate"] + ".\nThey have provided the following details:\n" + formData["userMessage"] + ".\nYou can contact them at " + formData["userEmail"] + " to confirm the hire.\nTheir school/company is " + formData["company"] + ".\nPostcode: " + formData["userPostCode"] + ".\nPhone: " + formData["userPhone"];
+  emailMessage =
+    formData["userName"] +
+    " has requested to hire kit for " +
+    formData["event"] +
+    " from " +
+    formData["startDate"] +
+    " to " +
+    formData["endDate"] +
+    ".\nThey have provided the following details:\n" +
+    formData["userMessage"] +
+    ".\nYou can contact them at " +
+    formData["userEmail"] +
+    " to confirm the hire.\nTheir school/company is " +
+    formData["company"] +
+    ".\nPostcode: " +
+    formData["userPostCode"] +
+    ".\nPhone: " +
+    formData["userPhone"];
   console.log("Email message:", emailMessage);
 
   // Defining the email options
@@ -180,20 +262,20 @@ app.post("/submit-form", (req, res) => {
 
   // Creating a transporter object using SMTP transport
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'noreply.kitlogger@gmail.com', // Sender's email
-      pass: 'krwg eyqp qlhq ioln', // Email account app password
+      user: "noreply.kitlogger@gmail.com", // Sender's email
+      pass: "krwg eyqp qlhq ioln", // Email account app password
     },
   });
 
   // Sending the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error('Error sending email:', error);
+      console.error("Error sending email:", error);
       return res.status(500).send(error.toString());
     }
-    console.log('Email sent:', info.response);
+    console.log("Email sent:", info.response);
     return res.status(200).send("Email sent: " + info.response);
   });
 });
@@ -202,17 +284,19 @@ app.post("/submit-form", (req, res) => {
 app.get("/fetch-data", async (req, res) => {
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
-    request.input('category', mssql.VarChar, 'Rucksacks');
-    const result = await request.query("SELECT * FROM kit_data ORDER BY id ASC");
+    request.input("category", mssql.VarChar, "Rucksacks");
+    const result = await request.query(
+      "SELECT * FROM kit_data ORDER BY id ASC"
+    );
 
     res.send(result.recordset); // Send the recordset to the client
     console.log(result.recordset.length); // Log the number of records
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).send('Query error');
+    console.error("Query error:", err);
+    res.status(500).send("Query error");
   }
 });
 
@@ -221,47 +305,58 @@ app.get("/search-data", async (req, res) => {
   const searchRequest = req.query.search; // Get the search query parameter
   const category = req.query.category;
 
-  console.log('Search request:', searchRequest);
-  console.log('Category:', category);
+  console.log("Search request:", searchRequest);
+  console.log("Category:", category);
 
   if (!searchRequest || !category) {
-    return res.status(400).send('Search query and category are required');
+    return res.status(400).send("Search query and category are required");
   }
 
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
-    request.input('searchRequest', mssql.VarChar, `%${searchRequest}%`);
+    request.input("searchRequest", mssql.VarChar, `%${searchRequest}%`);
     const query = `SELECT * FROM kit_data WHERE ${category} LIKE @searchRequest`;
     const result = await request.query(query);
 
     res.send(result.recordset);
   } catch (err) {
-    console.error('DB Query error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("DB Query error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 app.get("/kit-analysis", async (req, res) => {
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
     const allItems = await request.query("SELECT * FROM kit_data");
-    const onLoanItems = await request.query("SELECT * FROM kit_data WHERE on_loan = '1'");
-    const availableItems = await request.query("SELECT * FROM kit_data WHERE status = 'available'");
-    const missingItems = await request.query("SELECT * FROM kit_data WHERE status = 'missing'");
+    const onLoanItems = await request.query(
+      "SELECT * FROM kit_data WHERE on_loan = '1'"
+    );
+    const availableItems = await request.query(
+      "SELECT * FROM kit_data WHERE status = 'available'"
+    );
+    const missingItems = await request.query(
+      "SELECT * FROM kit_data WHERE status = 'missing'"
+    );
 
-    const result = await Promise.all([allItems.recordset.length, onLoanItems.recordset.length, availableItems.recordset.length, missingItems.recordset.length]);
+    const result = await Promise.all([
+      allItems.recordset.length,
+      onLoanItems.recordset.length,
+      availableItems.recordset.length,
+      missingItems.recordset.length,
+    ]);
     console.log(result);
 
     res.json(result);
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).send('Query error');
+    console.error("Query error:", err);
+    res.status(500).send("Query error");
   }
 });
 
@@ -269,27 +364,40 @@ app.get("/kit-analysis-by-category", async (req, res) => {
   const category = req.query.category;
 
   if (!category) {
-    return res.status(400).send('Category is required');
+    return res.status(400).send("Category is required");
   }
 
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
-    request.input('category', mssql.VarChar, `%${category}%`);
-    const allItems = await request.query("SELECT * FROM kit_data WHERE category LIKE @category");
-    const onLoanItems = await request.query("SELECT * FROM kit_data WHERE category LIKE @category AND on_loan = '1'");
-    const availableItems = await request.query("SELECT * FROM kit_data WHERE category LIKE @category AND status = 'available'");
-    const missingItems = await request.query("SELECT * FROM kit_data WHERE category LIKE @category AND status = 'missing'");
-    
-    const result = await Promise.all([allItems.recordset.length, onLoanItems.recordset.length, availableItems.recordset.length, missingItems.recordset.length]);
+    request.input("category", mssql.VarChar, `%${category}%`);
+    const allItems = await request.query(
+      "SELECT * FROM kit_data WHERE category LIKE @category"
+    );
+    const onLoanItems = await request.query(
+      "SELECT * FROM kit_data WHERE category LIKE @category AND on_loan = '1'"
+    );
+    const availableItems = await request.query(
+      "SELECT * FROM kit_data WHERE category LIKE @category AND status = 'available'"
+    );
+    const missingItems = await request.query(
+      "SELECT * FROM kit_data WHERE category LIKE @category AND status = 'missing'"
+    );
+
+    const result = await Promise.all([
+      allItems.recordset.length,
+      onLoanItems.recordset.length,
+      availableItems.recordset.length,
+      missingItems.recordset.length,
+    ]);
     console.log(result);
 
     res.json(result);
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).send('Query error');
+    console.error("Query error:", err);
+    res.status(500).send("Query error");
   }
 });
 
@@ -307,11 +415,13 @@ app.post("/submit-login-form", async (req, res) => {
 
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
-    request.input('username', mssql.VarChar, username);
-    const result = await request.query("SELECT * FROM login WHERE username = @username");
+    request.input("username", mssql.VarChar, username);
+    const result = await request.query(
+      "SELECT * FROM login WHERE username = @username"
+    );
 
     if (result.recordset.length === 0) {
       console.log("Login failed: User not found");
@@ -328,10 +438,10 @@ app.post("/submit-login-form", async (req, res) => {
       console.log("Login successful");
       console.log("User ID:", loginData.uid);
       req.session.userId = loginData.uid; // Store user ID in session
-      req.session.save(err => {
+      req.session.save((err) => {
         if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).send('Session save error');
+          console.error("Session save error:", err);
+          return res.status(500).send("Session save error");
         }
         return res.status(200).send(loginData);
       });
@@ -425,37 +535,41 @@ app.get("/search-data", (req, res) => {
 });
 */
 app.get("/kit-analysis", (req, res) => {
-
   const request = new mssql.Request();
-  const onLoanItems = request.query("SELECT * FROM kit_data WHERE on_loan = '1'");
-  const availableItems = request.query("SELECT * FROM kit_data WHERE status = 'available'");
-  const missingItems = request.query("SELECT * FROM kit_data WHERE status = 'missing'");
-  
-  const result = Promise.all([onLoanItems, availableItems, missingItems]);
-    console.log(result);
-  
-  res.send(result);
+  const onLoanItems = request.query(
+    "SELECT * FROM kit_data WHERE on_loan = '1'"
+  );
+  const availableItems = request.query(
+    "SELECT * FROM kit_data WHERE status = 'available'"
+  );
+  const missingItems = request.query(
+    "SELECT * FROM kit_data WHERE status = 'missing'"
+  );
 
+  const result = Promise.all([onLoanItems, availableItems, missingItems]);
+  console.log(result);
+
+  res.send(result);
 });
 
 app.post("/assign-kit", async (req, res) => {
   const data = req.body;
   console.log(data);
   if (!data.key) {
-    return res.status(400).send({ error: 'Key is required' });
+    return res.status(400).send({ error: "Key is required" });
   }
 
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const assignedKit = [];
 
     const assignItem = async (type, size) => {
       const request = pool.request();
-      request.input('type', mssql.VarChar, type);
-      request.input('size', mssql.VarChar, size);
-      request.input('key', mssql.VarChar, data.key);
+      request.input("type", mssql.VarChar, type);
+      request.input("size", mssql.VarChar, size);
+      request.input("key", mssql.VarChar, data.key);
 
       const query1 = `
         SELECT uid
@@ -463,7 +577,7 @@ app.post("/assign-kit", async (req, res) => {
         WHERE login.encrypt_key = @key`;
       const uid = await request.query(query1);
       console.log(uid.recordset[0].uid);
-      request.input('uid', mssql.Int, uid.recordset[0].uid);
+      request.input("uid", mssql.Int, uid.recordset[0].uid);
       const result = await request.query(`
         SELECT TOP 1 * FROM kit_data 
         WHERE category = @type AND attribute_size = @size AND status = 'Available'
@@ -486,21 +600,20 @@ app.post("/assign-kit", async (req, res) => {
         INSERT INTO kit_hire (kit_id1, user_id) 
         VALUES (${item.id}, @uid)
       `);
-      console.log('Kit assigned:', item.contents_of_qr_code);
+      console.log("Kit assigned:", item.contents_of_qr_code);
       assignedKit.push({ type, qrCode: item.contents_of_qr_code });
     };
 
-    if (data.rucksack) await assignItem('Rucksacks', data.rucksackSize);
-    if (data.sleepingBag) await assignItem('Sleeping Bag', null);
-    if (data.sleepingMat) await assignItem('Sleeping Mat', null);
-    if (data.boots) await assignItem('Boots', data.bootsSize);
-    if (data.waterproofs) await assignItem('Waterproofs', null);
-    
+    if (data.rucksack) await assignItem("Rucksacks", data.rucksackSize);
+    if (data.sleepingBag) await assignItem("Sleeping Bag", null);
+    if (data.sleepingMat) await assignItem("Sleeping Mat", null);
+    if (data.boots) await assignItem("Boots", data.bootsSize);
+    if (data.waterproofs) await assignItem("Waterproofs", null);
 
     res.json({ assignedKit });
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Query error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -508,15 +621,15 @@ app.get("/get-user-details", async (req, res) => {
   const key = req.query.key;
 
   if (!key) {
-    return res.status(400).send('Key is required');
+    return res.status(400).send("Key is required");
   }
 
   try {
     const pool = await getConnection();
-    console.log('Database connection established');
+    console.log("Database connection established");
 
     const request = pool.request();
-    request.input('key', mssql.VarChar, key);
+    request.input("key", mssql.VarChar, key);
     const query = `
       SELECT 
         login.username, 
@@ -541,11 +654,11 @@ app.get("/get-user-details", async (req, res) => {
     const result = await request.query(query);
 
     if (result.recordset.length === 0) {
-      return res.status(404).send('User not found');
+      return res.status(404).send("User not found");
     }
 
     const userData = result.recordset[0];
-    
+
     const response = {
       name: userData.username,
       groupNumber: userData.group_id,
@@ -554,17 +667,22 @@ app.get("/get-user-details", async (req, res) => {
       groupSize: userData.group_size,
     };
 
-    if (userData.group_tent_1) response.groupTent1 = userData.group_tent_1.slice(-3);
-    if (userData.group_tent_2) response.groupTent2 = userData.group_tent_2.slice(-3);
-    if (userData.group_tent_3) response.groupTent3 = userData.group_tent_3.slice(-3);
-    if (userData.group_stove_1) response.groupStove1 = userData.group_stove_1.slice(-3);
-    if (userData.group_stove_2) response.groupStove2 = userData.group_stove_2.slice(-3);
+    if (userData.group_tent_1)
+      response.groupTent1 = userData.group_tent_1.slice(-3);
+    if (userData.group_tent_2)
+      response.groupTent2 = userData.group_tent_2.slice(-3);
+    if (userData.group_tent_3)
+      response.groupTent3 = userData.group_tent_3.slice(-3);
+    if (userData.group_stove_1)
+      response.groupStove1 = userData.group_stove_1.slice(-3);
+    if (userData.group_stove_2)
+      response.groupStove2 = userData.group_stove_2.slice(-3);
 
     console.log(response);
     res.json(response);
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).send('Internal Server Error');
+    console.error("Query error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -578,25 +696,27 @@ app.get("/qr-code", async (req, res) => {
   const qrCode = req.query.code;
 
   if (!qrCode) {
-    return res.status(400).json({ error: 'QR code is required' });
+    return res.status(400).json({ error: "QR code is required" });
   }
 
   try {
     // Process the QR code (e.g., look up information in the database)
     const pool = await getConnection();
     const request = pool.request();
-    request.input('qrCode', mssql.VarChar, qrCode);
-    const result = await request.query("SELECT * FROM kit_data WHERE contents_of_qr_code = @qrCode");
+    request.input("qrCode", mssql.VarChar, qrCode);
+    const result = await request.query(
+      "SELECT * FROM kit_data WHERE contents_of_qr_code = @qrCode"
+    );
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({ error: 'QR code not found' });
+      return res.status(404).json({ error: "QR code not found" });
     }
 
     const data = result.recordset[0];
     res.json(data);
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Query error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -606,58 +726,58 @@ app.get("/update-kit", async (req, res) => {
   var uid;
 
   if (!id || !status) {
-    return res.status(400).json({ error: 'ID and status are required' });
+    return res.status(400).json({ error: "ID and status are required" });
   }
 
   try {
     const pool = await getConnection();
     const request = pool.request();
-    request.input('id', mssql.Int, id);
-    request.input('status', mssql.VarChar, status);
+    request.input("id", mssql.Int, id);
+    request.input("status", mssql.VarChar, status);
 
-    if (status === 'Available') {
+    if (status === "Available") {
       await request.query(`
         UPDATE kit_data
         SET status = @status, on_loan = 0
         WHERE id = @id
       `);
-    } else if (status === 'On Loan') {
+    } else if (status === "On Loan") {
       await request.query(`
         UPDATE kit_data
         SET status = @status, on_loan = 1
         WHERE id = @id
       `);
-    } else if (status === 'Missing') {
+    } else if (status === "Missing") {
       await request.query(`
         UPDATE kit_data
         SET status = @status, on_loan = 0
         WHERE id = @id
       `);
     } else {
-      return res.status(400).json({ error: 'Invalid status value' });
+      return res.status(400).json({ error: "Invalid status value" });
     }
 
     uid = id.toString();
   } catch (err) {
-    console.error('Query error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Query error:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 
   try {
     const pool = await getConnection();
     const request = pool.request();
-    request.input('id', mssql.VarChar, uid);
+    request.input("id", mssql.VarChar, uid);
     const result = await request.query("SELECT * FROM kit_data WHERE id = @id");
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({ error: 'QR code not found' });
+      return res.status(404).json({ error: "QR code not found" });
     }
 
     const data = result.recordset[0];
     res.json(data);
   } catch (err) {
-    console.error('Query error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Query error:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -665,14 +785,14 @@ app.post("/add-note", async (req, res) => {
   const { id, note } = req.body;
 
   if (!id || !note) {
-    return res.status(400).json({ error: 'ID and note are required' });
+    return res.status(400).json({ error: "ID and note are required" });
   }
 
   try {
     const pool = await getConnection();
     const request = pool.request();
-    request.input('id', mssql.Int, id);
-    request.input('note', mssql.VarChar, note);
+    request.input("id", mssql.Int, id);
+    request.input("note", mssql.VarChar, note);
 
     await request.query(`
       UPDATE kit_data
@@ -683,21 +803,124 @@ app.post("/add-note", async (req, res) => {
     const result = await request.query("SELECT * FROM kit_data WHERE id = @id");
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({ error: 'Kit item not found' });
+      return res.status(404).json({ error: "Kit item not found" });
     }
 
     const data = result.recordset[0];
     res.json(data);
   } catch (err) {
-    console.error('Query error:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Query error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// Handle CSV upload
+app.post('/upload-csv', async (req, res) => {
+  console.log('Received upload request');
+  if (!req.files || Object.keys(req.files).length === 0) {
+    console.log('No files were uploaded.');
+    return res.status(400).send({ message: 'No files were uploaded.' });
+  }
+
+  const csvFile = req.files.csvFile;
+  const uploadPath = path.join(uploadsDir, csvFile.name);
+
+  console.log('Uploading file to:', uploadPath);
+
+  csvFile.mv(uploadPath, async (err) => {
+    if (err) {
+      console.error('Error moving file:', err);
+      return res.status(500).send({ message: 'Error uploading file.' });
+    }
+
+    console.log('File uploaded successfully:', uploadPath);
+
+    const pool = await getConnection();
+    const request = pool.request();
+
+    const rows = [];
+    fs.createReadStream(uploadPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push(row);
+      })
+      .on('end', async () => {
+        const totalRows = rows.length;
+        let processedRows = 0;
+
+        for (const row of rows) {
+          console.log('Row data:', row); // Log the row data to debug
+
+          // Handle missing or undefined values
+          const contents_of_qr_code = row.contents_of_qr_code || '';
+          const status = row.status || '';
+          const category = row.category || '';
+          const manufacturer = row['manufacturer '] || ''; // Note the space in the key
+          const attribute_brand = row.attribute_brand || '';
+          const attribute_color = row.attribute_color || '';
+          const attribute_size = row.attribute_size || '';
+          const is_a_set = row.is_a_set || 0;
+          const number_in_set = row.number_in_set === 'NULL' ? null : row.number_in_set || 0;
+          const number_present_in_set = row.number_present_in_set === 'NULL' ? null : row.number_present_in_set || 0;
+          const purchased_date = formatDate(row.purchased_date);
+          const purchased_value = row.purchased_value || '';
+          const purchased_from = row.purchased_from || '';
+          const next_inspection_date = formatDate(row.next_inspection_date);
+          const last_inspection_date = formatDate(row.last_inspection_date);
+          const working_life_in_years = row.working_life_in_years === 'NULL' ? null : row.working_life_in_years || 0;
+          const retirement_date = formatDate(row.retirement_date);
+          const on_loan = row.on_loan || 0;
+          const notes = row.notes || '';
+
+          const query = `
+            INSERT INTO kit_data (
+              contents_of_qr_code, status, category, manufacturer, attribute_brand, 
+              attribute_color, attribute_size, is_a_set, number_in_set, 
+              number_present_in_set, purchased_date, purchased_value, purchased_from, 
+              next_inspection_date, last_inspection_date, working_life_in_years, 
+              retirement_date, on_loan, notes
+            ) VALUES (
+              '${contents_of_qr_code}', '${status}', '${category}', '${manufacturer}', '${attribute_brand}', 
+              '${attribute_color}', '${attribute_size}', ${is_a_set}, ${number_in_set}, 
+              ${number_present_in_set}, ${purchased_date ? `'${purchased_date}'` : null}, '${purchased_value}', '${purchased_from}', 
+              ${next_inspection_date ? `'${next_inspection_date}'` : null}, ${last_inspection_date ? `'${last_inspection_date}'` : null}, ${working_life_in_years}, 
+              ${retirement_date ? `'${retirement_date}'` : null}, ${on_loan}, '${notes}'
+            )`;
+
+          let retries = 20;
+          while (retries) {
+            try {
+              console.log('Executing query:', query);
+              await request.query(query);
+              break; // Break the loop if the query is successful
+            } catch (err) {
+              console.error('Error inserting data:', err);
+              retries -= 1;
+              console.log(`Retries left for this row: ${retries}`);
+              if (!retries) throw err;
+              await new Promise((res) => setTimeout(res, 6000)); // Wait 6 seconds before retrying
+            }
+          }
+
+          processedRows++;
+          const progress = Math.round((processedRows / totalRows) * 100);
+          res.write(JSON.stringify({ progress: progress }) + '\n');
+          }
+
+          // Remove the uploaded file
+          fs.unlinkSync(uploadPath);
+          console.log('CSV file successfully processed.');
+          res.write(JSON.stringify({ progress: 100 }) + '\n');
+          res.end();
+      });
+  });
+});
+
 
 /*
     //request.query("CREATE TABLE login(user_id INT IDENTITY(1,1) PRIMARY KEY,	username VARCHAR(50), password_hash VARCHAR(50), encrypt_key VARCHAR(50), exped_level VARCHAR(6), loan_paid BIT, no_of_loaned_items INT);", function (err, success) {});
     //request.query("CREATE TABLE kit_hire(user_id INT PRIMARY KEY, loan_start_date DATE, loan_end_date DATE, loan_name VARCHAR(50), loan_email VARCHAR(70), loan_paid BIT, rental_value VARCHAR(10), kit_id1 INT, kit_id2 INT, kit_id3 INT, kit_id4 INT, kit_id5 INT);", function (err, success) {});
-*/  
+*/
 /*  
     const username = "rfaughny2";
     const password = "$2a$04$hYFCtwlw8MLiSqMl.JaMSeZbCgI6jZqPPSzb2wDHeU8Xo/GLz.z0u";

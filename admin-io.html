@@ -18,109 +18,189 @@
 -->
 <!DOCTYPE html>
 <html lang="en-EN">
-  <title>Port - Kit Logger</title>
+<title>Port - Kit Logger</title>
 
-  <head>
-    <!--Width Scaling and Icon-->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="https://i.imgur.com/ERlryfF.png" />
-    <!--CSS External Stylesheet-->
-    <link rel="stylesheet" href="http://127.0.0.1:3000/static/style.css" type="text/css" />
-    <link rel="stylesheet" href="https://madscientist-314.github.io/static/style.css" type="text/css">
-    <!--Google Icons-->
-    <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
+<head>
+  <!--Width Scaling and Icon-->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="https://i.imgur.com/ERlryfF.png" />
+  <!--CSS External Stylesheet-->
+  <link rel="stylesheet" href="http://127.0.0.1:3000/static/style.css" type="text/css" />
+  <link rel="stylesheet" href="https://madscientist-314.github.io/static/style.css" type="text/css">
+  <!--Google Icons-->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!--https://fonts.google.com/icons?preview.size=14&preview.layout=grid&classification=Display&stroke=Sans+Serif&vfonly=true&selected=Material+Symbols+Outlined:refresh:FILL@0;wght@400;GRAD@0;opsz@20&icon.size=18&icon.color=%23e8eaed&icon.platform=web-->
 
-  </head>
+</head>
 
-  <nav>
-    <!--Navigation Bar-->
-    <div class="topnav">
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin" style="float: left;">
-        <span class="material-symbols-outlined"> refresh </span>
-      </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/">
-        <span class="material-symbols-outlined" style="text-align: centre">
-          logout
-        </span>
-      </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage">
-        Manage
-      </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/io" class="active">
-        Import
-      </a>
-      <a href="https://madscientist-314.github.io/kitloggerwebsite/admin">
-        Overview
-      </a>
-      <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
+<nav>
+  <!--Navigation Bar-->
+  <div class="topnav">
+    <a class="login-button" href="/kitloggerwebsite/admin-io" style="float: left;">
+      <span class="material-symbols-outlined"> refresh </span>
+    </a>
+    <button id="btn" class="login-button" style="float: left;" onclick="QRPopup('overview')">
+      <span class="material-symbols-outlined">
+        qr_code_scanner
+      </span>
+    </button>
+    <a>⠀</a>
+    <a href="/kitloggerwebsite/">
+      <span class="material-symbols-outlined" style="text-align: centre">
+        logout
+      </span>
+    </a>
+    <a href="/kitloggerwebsite/admin-manage">
+      Manage
+    </a>
+    <a href="/kitloggerwebsite/admin-io">
+      Import
+    </a>
+    <a href="/kitloggerwebsite/admin" class="active">
+      Overview
+    </a>
+
+    <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
+  </div>
+</nav>
+
+<body>
+  <script>
+    function addScanText() {
+      const btn = document.getElementById('btn');
+      if (!btn.innerHTML.includes('Scan')) {
+        btn.innerHTML += ' Scan';
+      }
+    }
+
+    function removeScanText() {
+      const btn = document.getElementById('btn');
+      btn.innerHTML = btn.innerHTML.replace(' Scan', '');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn');
+      btn.addEventListener('mouseover', addScanText);
+      btn.addEventListener('mouseout', removeScanText);
+    });
+
+    var toggle = document.getElementById("theme-toggle");
+
+    var storedTheme =
+      localStorage.getItem("theme") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+
+    if (storedTheme)
+      document.documentElement.setAttribute("data-theme", storedTheme);
+
+    toggle.onclick = function () {
+      var currentTheme = document.documentElement.getAttribute("data-theme");
+      var targetTheme = "light";
+      document.getElementById("themeIcon").innerHTML = "dark_mode";
+
+      if (currentTheme === "light") {
+        targetTheme = "dark";
+        document.getElementById("themeIcon").innerHTML = "light_mode";
+      }
+
+      document.documentElement.setAttribute("data-theme", targetTheme);
+      localStorage.setItem("theme", targetTheme);
+    };
+  </script>
+  <h1>Kit Logger</h1>
+  <p></p>
+  <!-- CSV Import Form -->
+  <div class="import-section">
+    <h2>Import CSV</h2>
+    <form id="csvForm" enctype="multipart/form-data">
+      <input type="file" id="csvFile" name="csvFile" accept=".csv" required />
+      <button type="submit">Upload</button>
+    </form>
+    <div id="uploadStatus"></div>
+    <div id="progressContainer" style="display: none;">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="progressText">0%</span>
     </div>
-    <div class="dark-mode">
-      <button id="theme-toggle" class="themebutton">
-        <span class="material-symbols-outlined" id="themeIcon"> light_mode </span>
-      </button>
-    </div>
-    <script>
-      var toggle = document.getElementById("theme-toggle");
+  </div>
 
-      var storedTheme =
-        localStorage.getItem("theme") ||
-        (window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light");
+  <script>
+    document.getElementById('csvForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+  
+      const formData = new FormData();
+      const fileInput = document.getElementById('csvFile');
+      formData.append('csvFile', fileInput.files[0]);
+  
+      console.log('Uploading file:', fileInput.files[0]);
+  
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      progressContainer.style.display = 'block';
+  
+      fetch('https://b3ab-81-78-211-83.ngrok-free.app/upload-csv', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+          }
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          return reader.read().then(function processText({ done, value }) {
+            if (done) return;
+            const text = decoder.decode(value, { stream: true });
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            lines.forEach(line => {
+              const data = JSON.parse(line);
+              console.log('Progress:', data.progress);
+              updateProgress(data.progress);
+            });
+            return reader.read().then(processText);
+          });
+          return response.json();
+        }) .catch(error => {
+          console.error('Error uploading CSV:', error);
+          document.getElementById('uploadStatus').innerText = 'Error uploading CSV: ' + error.message;
+        });
+    });
 
-      if (storedTheme)
-        document.documentElement.setAttribute("data-theme", storedTheme);
+    function updateProgress(percentage) {
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      progressBar.value = percentage;
+      progressText.innerText = `${percentage}%`;
+      if (percentage === 100) {
+        document.getElementById('uploadStatus').innerText = 'Upload complete!';
+      }
+    }
+  </script>
+</body>
 
-      toggle.onclick = function () {
-        var currentTheme = document.documentElement.getAttribute("data-theme");
-        var targetTheme = "light";
-        document.getElementById("themeIcon").innerHTML = "dark_mode";
 
-        if (currentTheme === "light") {
-          targetTheme = "dark";
-          document.getElementById("themeIcon").innerHTML = "light_mode";
-        }
+<footer>
+  <br /><br /><br /><br /><br />
+  <div class="footer">
+    <!--Footer-->
+    <p style="color: #f5f5f1">
+      St Clement Danes School<br /><br />
+      <a class="button" href="https://www.stclementdanes.org.uk" target="_blank" rel="noopener noreferrer">Website
+      </a>
+      <a class="button" href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw" target="_blank"
+        rel="noopener noreferrer">Follow @SCDDofE
+      </a>
+      <script async src="https://platform.twitter.com/widgets.js"></script>
+      <!--https://publish.twitter.com/#-->
+      <br /><br />
+      Published under the GNU General Public
+      <a class="link" href="https://madscientist-314.github.io/kitloggerwebsite/licence.html">
+        Licence </a><br />
+    </p>
+  </div>
+</footer>
 
-        document.documentElement.setAttribute("data-theme", targetTheme);
-        localStorage.setItem("theme", targetTheme);
-      };
-    </script>
-  </nav>
-
-  <body>
-    <h1>Kit Logger</h1>
-    <p></p>
-  </body>
-
-  <footer>
-    <br /><br /><br /><br /><br />
-    <div class="footer">
-      <!--Footer-->
-      <p style="color: #f5f5f1">
-        St Clement Danes School<br /><br />
-        <a
-          class="button"
-          href="https://www.stclementdanes.org.uk"
-          target="_blank"
-          rel="noopener noreferrer">Website
-        </a>
-        <a
-          class="button"
-          href="https://twitter.com/SCDDofE?ref_src=twsrc%5Etfw"
-          target="_blank"
-          rel="noopener noreferrer">Follow @SCDDofE
-        </a>
-        <script async src="https://platform.twitter.com/widgets.js"></script>
-        <!--https://publish.twitter.com/#-->
-        <br /><br />
-        Published under the GNU General Public
-        <a
-          class="link"
-          href="https://madscientist-314.github.io/kitloggerwebsite/licence.html">
-          Licence </a><br />
-      </p>
-    </div>
-  </footer>
 </html>
