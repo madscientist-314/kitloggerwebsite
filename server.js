@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.3.1
+  Software: v0.3.2
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -590,6 +590,100 @@ app.get("/qr-code", async (req, res) => {
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: 'QR code not found' });
+    }
+
+    const data = result.recordset[0];
+    res.json(data);
+  } catch (err) {
+    console.error('Query error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get("/update-kit", async (req, res) => {
+  const { id, status } = req.query;
+  console.log(id, status);
+  var uid;
+
+  if (!id || !status) {
+    return res.status(400).json({ error: 'ID and status are required' });
+  }
+
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+    request.input('id', mssql.Int, id);
+    request.input('status', mssql.VarChar, status);
+
+    if (status === 'Available') {
+      await request.query(`
+        UPDATE kit_data
+        SET status = @status, on_loan = 0
+        WHERE id = @id
+      `);
+    } else if (status === 'On Loan') {
+      await request.query(`
+        UPDATE kit_data
+        SET status = @status, on_loan = 1
+        WHERE id = @id
+      `);
+    } else if (status === 'Missing') {
+      await request.query(`
+        UPDATE kit_data
+        SET status = @status, on_loan = 0
+        WHERE id = @id
+      `);
+    } else {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    uid = id.toString();
+  } catch (err) {
+    console.error('Query error:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+    request.input('id', mssql.VarChar, uid);
+    const result = await request.query("SELECT * FROM kit_data WHERE id = @id");
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: 'QR code not found' });
+    }
+
+    const data = result.recordset[0];
+    res.json(data);
+  } catch (err) {
+    console.error('Query error:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post("/add-note", async (req, res) => {
+  const { id, note } = req.body;
+
+  if (!id || !note) {
+    return res.status(400).json({ error: 'ID and note are required' });
+  }
+
+  try {
+    const pool = await getConnection();
+    const request = pool.request();
+    request.input('id', mssql.Int, id);
+    request.input('note', mssql.VarChar, note);
+
+    await request.query(`
+      UPDATE kit_data
+      SET notes = @note
+      WHERE id = @id
+    `);
+
+    const result = await request.query("SELECT * FROM kit_data WHERE id = @id");
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: 'Kit item not found' });
     }
 
     const data = result.recordset[0];

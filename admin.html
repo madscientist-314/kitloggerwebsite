@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.1
+  Software: v0.3.2
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -36,30 +36,36 @@
 <nav>
   <!--Navigation Bar-->
   <div class="topnav">
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/admin" style="float: left;">
+    <a class="login-button" href="/admin" style="float: left;">
       <span class="material-symbols-outlined"> refresh </span>
     </a>
-    <button class="login-button" style="float: left;" onclick="QRPopup('overview')">
+    <button id="btn" class="login-button" style="float: left;" onclick="QRPopup('overview')">
       <span class="material-symbols-outlined">
         qr_code_scanner
       </span>
     </button>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/">
+    <a>⠀</a>
+    <a href="/">
       <span class="material-symbols-outlined" style="text-align: centre">
         logout
       </span>
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/manage">
+    <a href="/admin-manage">
       Manage
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/admin/io">
+    <a href="/admin-io">
       Import
     </a>
-    <a href="https://madscientist-314.github.io/kitloggerwebsite/admin" class="active">
+    <a href="/admin" class="active">
       Overview
     </a>
+    
     <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
   </div>
+</nav>
+
+<body>
+  <br><br>
   <div class="dark-mode">
     <button id="theme-toggle" class="themebutton">
       <span class="material-symbols-outlined" id="themeIcon"> light_mode
@@ -67,6 +73,24 @@
     </button>
   </div>
   <script>
+    function addScanText() {
+      const btn = document.getElementById('btn');
+      if (!btn.innerHTML.includes('Scan')) {
+        btn.innerHTML += ' Scan';
+      }
+    }
+  
+    function removeScanText() {
+      const btn = document.getElementById('btn');
+      btn.innerHTML = btn.innerHTML.replace(' Scan', '');
+    }
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn');
+      btn.addEventListener('mouseover', addScanText);
+      btn.addEventListener('mouseout', removeScanText);
+    });
+
     var toggle = document.getElementById("theme-toggle");
 
     var storedTheme =
@@ -92,25 +116,232 @@
       localStorage.setItem("theme", targetTheme);
     };
   </script>
-</nav>
-
-<body>
   <h1>Kit Logger</h1>
   <sub>Overview</sub><br><br>
 
-  <div id="qrPopup" class="QRpopup" style="display: none;">
-    <div class="QRpopup-content">
+  <div id="qrPopup" class="modal" style="display: none;">
+    <div class="modal-content animate">
       <span class="close" onclick="closeQRPopup()">&times;</span>
-      <h5 id="qrLoad" style="text-align: center;">loading...</h5><br>
-      <div id="qr">
-        <video id="qrReader" width="80%"></video>
+      <h3 id="qrLoad">Loading...</h3>
+      <div id="reader">
+      </div>
+    </div>
+  </div>
+
+  <div id="dataModal" class="modal" style="display: none;">
+    <div class="modal-content animate">
+      <span class="close" onclick="closeDataModal()">&times;</span>
+      <h3 id="qrLoad">QR Code Data</h3>
+      <div id="modalData"></div>
+      <div class="modal-buttons">
+        <button id="loan" onclick="loan_toggle()">Loan</button>
+        <button id="missing" onclick="missing()">Mark as Missing</button>
+        <button onclick="showNote()">Add/Edit Note</button>
+        <button id="expand" onclick="showAllData()">Expand Info</button>
+      </div>
+      <div id="noteSection" class="modal-note" style="display: none;">
+        <textarea id="noteText" rows="4" cols="50" placeholder="Enter your note here..."></textarea>
+        <button onclick="saveNote()">Save Note</button>
       </div>
     </div>
   </div>
 
   <script>
     let qrCodeScanner;
-
+    let returnedJSON;
+    let collapsed; // Initialize as collapsed
+  
+    // Function to format keys
+    function formatKey(key) {
+      return key.replace(/_/g, ' ')
+        .replace(/\b\w/g, char => char.toUpperCase())
+        .replace(/\bId\b/g, 'ID')
+        .replace(/\bContents Of Qr Code\b/g, 'Number')
+        .replace(/\bAttribute \b/g, '');
+    }
+  
+    // Function to format dates
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+  
+    // Function to extract and convert the last 3 characters of the QR code
+    function extractNumberFromQR(qrCode) {
+      const match = qrCode.match(/(\d{3})$/);
+      return match ? parseInt(match[0], 10) : null;
+    }
+  
+    // Show Data Modal function
+    function showDataModal(data, collapsed = true) {
+      const modal = document.getElementById('dataModal');
+      const modalData = document.getElementById('modalData');
+      modalData.innerHTML = ''; // Clear previous data
+  
+      // Define allowed keys for initial display
+      const allowedKeys = ['contents_of_qr_code', 'status', 'category', 'attribute_brand', 'attribute_color', 'attribute_size'];
+      const hiddenKeys = ['id', 'notes', 'on_loan'];
+  
+      // Format and display the data
+      for (const key in data) {
+        if (data.hasOwnProperty(key) && (collapsed ? allowedKeys.includes(key) : true) && !hiddenKeys.includes(key)) {
+          const formattedKey = formatKey(key);
+          let value = key.includes('date') ? formatDate(data[key]) : data[key];
+          if (key === 'contents_of_qr_code') {
+            value = extractNumberFromQR(data[key]);
+          }
+          const p = document.createElement('p');
+          p.classList.add('padded');
+          p.innerHTML = `<b>${formattedKey}:</b> <span class="color">${value}</span>`;
+          p.id = formattedKey;
+          modalData.appendChild(p);
+        }
+      }
+  
+      if (data['on_loan'] === true) {
+        document.getElementById('loan').innerHTML = 'Return';
+      } else {
+        document.getElementById('loan').innerHTML = 'Loan';
+      }
+  
+      modal.style.display = 'block';
+    }
+  
+    // Close Data Modal function
+    function closeDataModal() {
+      const modal = document.getElementById('dataModal');
+      modal.style.display = 'none';
+    }
+  
+    window.onclick = function (event) {
+      const modal = document.getElementById('dataModal');
+      if (event.target === modal) {
+        closeDataModal();
+      }
+      const modal2 = document.getElementById('qrPopup');
+      if (event.target === modal2) {
+        closeQRPopup();
+      }
+    }
+  
+    function loan_toggle() {
+      if (returnedJSON && returnedJSON['on_loan'] === true) {
+        updateKit(returnedJSON.id, 'Available').then(updatedData => {
+          returnedJSON = updatedData;
+          showDataModal(returnedJSON, collapsed);
+          document.getElementById("loan").innerText = "Loan";
+        }).catch(error => {
+          console.error('Error updating kit:', error);
+        });
+      } else if (returnedJSON) {
+        updateKit(returnedJSON.id, 'On Loan').then(updatedData => {
+          returnedJSON = updatedData;
+          showDataModal(returnedJSON, collapsed);
+          document.getElementById("loan").innerText = "Return";
+        }).catch(error => {
+          console.error('Error updating kit:', error);
+        });
+      }
+    }
+  
+    function missing() {
+      if (returnedJSON && returnedJSON['status'] === 'Missing') {
+        updateKit(returnedJSON.id, 'Available').then(updatedData => {
+          returnedJSON = updatedData;
+          showDataModal(returnedJSON, collapsed);
+          document.getElementById("missing").innerText = "Mark as Missing";
+          document.getElementById("loan").removeAttribute('disabled');
+        }).catch(error => {
+          console.error('Error updating kit:', error);
+        });
+      } else if (returnedJSON) {
+        updateKit(returnedJSON.id, 'Missing').then(updatedData => {
+          returnedJSON = updatedData;
+          showDataModal(returnedJSON, collapsed);
+          document.getElementById("missing").innerText = "Mark as Available";
+          document.getElementById("loan").setAttribute('disabled', true);
+        }).catch(error => {
+          console.error('Error updating kit:', error);
+        });
+      }
+    }
+  
+    function showNote() {
+      const noteSection = document.getElementById('noteSection');
+      const noteText = document.getElementById('noteText');
+      if (noteSection.style.display === 'block') {
+        noteSection.style.display = 'none';
+        noteText.value = ''; // Clear the note text
+      } else {
+        noteText.value = returnedJSON.notes || ''; // Display existing note if available
+        noteSection.style.display = 'block';
+      }
+    }
+  
+    function saveNote() {
+      const noteText = document.getElementById('noteText').value;
+      updateNote(returnedJSON.id, noteText).then(updatedData => {
+        returnedJSON = updatedData;
+        showDataModal(returnedJSON, collapsed);
+        document.getElementById('noteSection').style.display = 'none';
+      }).catch(error => {
+        console.error('Error saving note:', error);
+      });
+    }
+  
+    function showAllData() {
+      const expandButton = document.getElementById('expand');
+      if (collapsed) {
+        expandButton.innerText = 'Collapse Info';
+        showDataModal(returnedJSON, false); // Show all details
+      } else {
+        expandButton.innerText = 'Expand Info';
+        showDataModal(returnedJSON, true); // Show initial details
+      }
+      collapsed = !collapsed;
+    }
+  
+    async function updateKit(id, status) {
+      try {
+        const response = await fetch(`https://b3ab-81-78-211-83.ngrok-free.app/update-kit?id=${id}&status=${status}`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Server response:', data);
+        return data;
+      } catch (error) {
+        console.error('Error updating kit:', error);
+        throw error;
+      }
+    }
+  
+    async function updateNote(id, note) {
+      try {
+        const response = await fetch(`https://b3ab-81-78-211-83.ngrok-free.app/add-note`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
+          body: JSON.stringify({ id, note })
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Server response:', data);
+        return data;
+      } catch (error) {
+        console.error('Error updating note:', error);
+        throw error;
+      }
+    }
+  
     // Close QR Popup function
     function closeQRPopup() {
       document.getElementById('qrPopup').style.display = 'none';
@@ -122,68 +353,76 @@
         });
       }
     }
-
+  
     // Open QR Popup function
-    function QRPopup() {
+    async function QRPopup() {
       var popup = document.getElementById('qrPopup');
       popup.style.display = 'block';
-
-      qrCodeScanner = new Html5Qrcode("qr");
-      qrCodeScanner.start(
-        { facingMode: "environment" }, // Use the rear camera
-        {
-          fps: 10, // Frames per second
-          qrbox: 250 // QR code scanning box size
-        },
-        qrCodeMessage => {
-          console.log(`QR Code detected: ${qrCodeMessage}`);
-          document.getElementById('qrLoad').innerText = 'QR Code detected. Sending to server...';
-          qrCodeScanner.pause(true); // Pause the scanner
-
-          // Send a GET request to the server with the decoded QR code text
-          fetch(`https://5fb1-81-78-211-83.ngrok-free.app/qr-code?code=${encodeURIComponent(qrCodeMessage)}`, {
-            headers: {
-              'ngrok-skip-browser-warning': 'true'
+  
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length) {
+          const cameraId = devices[0].id; // Use the first camera device ID
+          qrCodeScanner = new Html5Qrcode("reader", true);
+          await qrCodeScanner.start(
+            { deviceId: { exact: cameraId } }, // Use the camera ID
+            {
+              fps: 10, // Frames per second
+              qrbox: { width: 250, height: 250 } // QR code scanning box size
+            },
+            qrCodeMessage => {
+              console.log(`QR Code detected: ${qrCodeMessage}`);
+              document.getElementById('qrLoad').innerText = 'QR Code detected. Sending to server...';
+              qrCodeScanner.pause(true); // Pause the scanner
+  
+              // Send a GET request to the server with the decoded QR code text
+              fetch(`https://b3ab-81-78-211-83.ngrok-free.app/qr-code?code=${encodeURIComponent(qrCodeMessage)}`, {
+                headers: {
+                  'ngrok-skip-browser-warning': 'true'
+                }
+              }) //run ngrok start --all and copy the https link for port 3003
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  returnedJSON = data;
+                  console.log('Server response:', returnedJSON);
+                  collapsed = true; // Initialize as collapsed
+                  showDataModal(data, collapsed);
+                  qrCodeScanner.stop();
+                  closeQRPopup();
+                })
+                .catch(error => {
+                  console.error('Error sending QR code to server:', error);
+                  document.getElementById('qrLoad').innerText = 'Error sending QR code to server';
+                });
+            },
+            errorMessage => {
+              console.error(`QR Code scanning error: ${errorMessage}`);
+              console.log(qrCodeScanner);
+              // Update the loading text
+              if (errorMessage === 'Error getting userMedia, error = NotAllowedError: Permission denied') {
+                document.getElementById('qrLoad').innerText = 'Please allow camera access';
+              } else {
+                document.getElementById('qrLoad').innerText = `QR Code scanning error: ${errorMessage}`;
+              }
             }
-          }) //run ngrok start --all and copy the https link for port 3003
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok');
-              }
-              return response.text();
-            })
-            .then(text => {
-              try {
-                const data = JSON.parse(text); // Try to parse the response as JSON
-                console.log('Server response:', data);
-                alert('QR Scanned');
-
-
-                qrCodeScanner.stop();
-                closeQRPopup();
-              } catch (error) {
-                console.error('Error parsing JSON:', error);
-                document.getElementById('qrLoad').innerText = 'Error parsing server response';
-              }
-            })
-            .catch(error => {
-              console.error('Error sending QR code to server:', error);
-              document.getElementById('qrLoad').innerText = 'Error sending QR code to server';
-            });
-        },
-        errorMessage => {
-          console.error(`QR Code scanning error: ${errorMessage}`);
-          // Update the loading text
-          document.getElementById('qrLoad').innerText = 'QR Scanner is ready. Please scan a QR code.';
+          );
+        } else {
+          console.error('No cameras found.');
+          document.getElementById('qrLoad').innerText = 'No cameras found.';
         }
-      ).catch(err => {
+      } catch (err) {
         console.error(`Unable to start QR Code scanner: ${err}`);
         if (err === 'Error getting userMedia, error = NotAllowedError: Permission denied') {
           document.getElementById('qrLoad').innerText = 'Please allow camera access';
         } else {
           document.getElementById('qrLoad').innerText = `Unable to start QR Code scanner: ${err}`;
         }
-      });
+      }
     }
   </script>
 
@@ -286,7 +525,7 @@
       document.getElementById('analyseButton').addEventListener('click', function () {
         console.log('Analysing kit...');
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://5fb1-81-78-211-83.ngrok-free.app/kit-analysis', true);
+        xhr.open('GET', 'https://b3ab-81-78-211-83.ngrok-free.app/kit-analysis', true);
         xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
         xhr.onload = function () {
           if (xhr.status === 200) {
@@ -322,7 +561,7 @@
             div.style.display = 'flex';
             document.getElementById(category).style.color = 'var(--primary)';
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `https://5fb1-81-78-211-83.ngrok-free.app/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
+            xhr.open('GET', `https://b3ab-81-78-211-83.ngrok-free.app/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
             xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
             xhr.onload = function () {
               if (xhr.status === 200) {
@@ -431,7 +670,7 @@
 
     document.getElementById('fetchDataButton').addEventListener('click', function () {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://5fb1-81-78-211-83.ngrok-free.app/fetch-data', true);
+      xhr.open('GET', 'https://b3ab-81-78-211-83.ngrok-free.app/fetch-data', true);
       xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
@@ -461,7 +700,7 @@
       console.log(`Searching for ${searchTerm} in ${category}...`);
 
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `https://5fb1-81-78-211-83.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
+      xhr.open('GET', `https://b3ab-81-78-211-83.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
       xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
