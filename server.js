@@ -1,6 +1,6 @@
 /*
   GNU AGPLv3.0 2023 
-  Software: v0.3.2
+  Software: v0.3.3
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -17,6 +17,11 @@
   You should have received a copy of the GNU General Public License
   along with this program [LICENSE.txt].  If not, see <https://www.gnu.org/licenses/>.
 */
+
+/*
+  mint-cricket-rare.ngrok-free.app > permanent URL of server when running ngrok start --all
+*/
+
 // Functions
 function getKitDataByID(records) {
   records.recordset.forEach(function (record) {

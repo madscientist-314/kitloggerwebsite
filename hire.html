@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.2.4
+  Software: v0.3.3
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -141,7 +141,7 @@
         //console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhrLogin.open("POST", "https://b3ab-81-78-211-83.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
+        xhrLogin.open("POST", "https://mint-cricket-rare.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
         xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
         xhrLogin.onload = function () { // when the request is loaded
           if (xhrLogin.status === 200) { // if the request is successful
@@ -178,7 +178,7 @@
       access the internal hire form.
     </div>
     <div class="form">
-      <form class="hire" id="externalHireForm" type="_blank" action="http://localhost:3000/submit-form" method="POST">
+      <form class="hire" id="externalHireForm" type="_blank" method="POST">
         <ul>
           <li>
             <p style="text-align: center; font-weight: 1000; font-size: 20px;"><b>External
@@ -239,7 +239,7 @@
         console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhr = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhr.open("POST", "http://localhost:3003/submit-form"); // open a new request
+        xhr.open("POST", "http://mint-cricket-rare.ngrok-free.app/submit-form"); // open a new request
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onload = function () { // when the request is loaded
           console.log("Response received:", xhr.responseText); // Log the response from the server

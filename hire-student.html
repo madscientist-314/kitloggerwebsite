@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.2
+  Software: v0.3.3
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -121,7 +121,7 @@
             const key = urlParams.get('key');
             if (key) {
                 // Make an AJAX request to the server with the key
-                fetch(`http://localhost:3003/get-user-details?key=${key}`)
+                fetch(`http://mint-cricket-rare.ngrok-free.app/get-user-details?key=${key}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.expeditionLevel <= 3) {
@@ -298,7 +298,7 @@
                 jsonData.key = key;
                 console.log(jsonData);
 
-                fetch("http://localhost:3003/assign-kit", {
+                fetch("http://mint-cricket-rare.ngrok-free.app/assign-kit", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.2
+  Software: v0.3.3
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -137,7 +137,7 @@
         //console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhrLogin = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhrLogin.open("POST", "https://b3ab-81-78-211-83.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
+        xhrLogin.open("POST", "https://mint-cricket-rare.ngrok-free.app/submit-login-form"); // open a new request // use ngrok to tunnel to localhost
         xhrLogin.setRequestHeader("Content-Type", "application/json"); // set the request header
         xhrLogin.onload = function () { // when the request is loaded
           if (xhrLogin.status === 200) { // if the request is successful

@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.2
+  Software: v0.3.3
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -59,7 +59,7 @@
     <a href="/kitloggerwebsite/admin" class="active">
       Overview
     </a>
-    
+
     <div class="horizonal-line" style="margin-top: 43px; margin-bottom: 5px; opacity: 0.7;"></div>
   </div>
 </nav>
@@ -78,12 +78,12 @@
         btn.innerHTML += ' Scan';
       }
     }
-  
+
     function removeScanText() {
       const btn = document.getElementById('btn');
       btn.innerHTML = btn.innerHTML.replace(' Scan', '');
     }
-  
+
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('btn');
       btn.addEventListener('mouseover', addScanText);
@@ -149,7 +149,7 @@
     let qrCodeScanner;
     let returnedJSON;
     let collapsed; // Initialize as collapsed
-  
+
     // Function to format keys
     function formatKey(key) {
       return key.replace(/_/g, ' ')
@@ -158,29 +158,29 @@
         .replace(/\bContents Of Qr Code\b/g, 'Number')
         .replace(/\bAttribute \b/g, '');
     }
-  
+
     // Function to format dates
     function formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
     }
-  
+
     // Function to extract and convert the last 3 characters of the QR code
     function extractNumberFromQR(qrCode) {
       const match = qrCode.match(/(\d{3})$/);
       return match ? parseInt(match[0], 10) : null;
     }
-  
+
     // Show Data Modal function
     function showDataModal(data, collapsed = true) {
       const modal = document.getElementById('dataModal');
       const modalData = document.getElementById('modalData');
       modalData.innerHTML = ''; // Clear previous data
-  
+
       // Define allowed keys for initial display
       const allowedKeys = ['contents_of_qr_code', 'status', 'category', 'attribute_brand', 'attribute_color', 'attribute_size'];
       const hiddenKeys = ['id', 'notes', 'on_loan'];
-  
+
       // Format and display the data
       for (const key in data) {
         if (data.hasOwnProperty(key) && (collapsed ? allowedKeys.includes(key) : true) && !hiddenKeys.includes(key)) {
@@ -196,22 +196,22 @@
           modalData.appendChild(p);
         }
       }
-  
+
       if (data['on_loan'] === true) {
         document.getElementById('loan').innerHTML = 'Return';
       } else {
         document.getElementById('loan').innerHTML = 'Loan';
       }
-  
+
       modal.style.display = 'block';
     }
-  
+
     // Close Data Modal function
     function closeDataModal() {
       const modal = document.getElementById('dataModal');
       modal.style.display = 'none';
     }
-  
+
     window.onclick = function (event) {
       const modal = document.getElementById('dataModal');
       if (event.target === modal) {
@@ -222,7 +222,7 @@
         closeQRPopup();
       }
     }
-  
+
     function loan_toggle() {
       if (returnedJSON && returnedJSON['on_loan'] === true) {
         updateKit(returnedJSON.id, 'Available').then(updatedData => {
@@ -242,7 +242,7 @@
         });
       }
     }
-  
+
     function missing() {
       if (returnedJSON && returnedJSON['status'] === 'Missing') {
         updateKit(returnedJSON.id, 'Available').then(updatedData => {
@@ -264,7 +264,7 @@
         });
       }
     }
-  
+
     function showNote() {
       const noteSection = document.getElementById('noteSection');
       const noteText = document.getElementById('noteText');
@@ -276,7 +276,7 @@
         noteSection.style.display = 'block';
       }
     }
-  
+
     function saveNote() {
       const noteText = document.getElementById('noteText').value;
       updateNote(returnedJSON.id, noteText).then(updatedData => {
@@ -287,7 +287,7 @@
         console.error('Error saving note:', error);
       });
     }
-  
+
     function showAllData() {
       const expandButton = document.getElementById('expand');
       if (collapsed) {
@@ -299,10 +299,10 @@
       }
       collapsed = !collapsed;
     }
-  
+
     async function updateKit(id, status) {
       try {
-        const response = await fetch(`https://b3ab-81-78-211-83.ngrok-free.app/update-kit?id=${id}&status=${status}`, {
+        const response = await fetch(`https://mint-cricket-rare.ngrok-free.app/update-kit?id=${id}&status=${status}`, {
           headers: {
             'ngrok-skip-browser-warning': 'true'
           }
@@ -318,10 +318,10 @@
         throw error;
       }
     }
-  
+
     async function updateNote(id, note) {
       try {
-        const response = await fetch(`https://b3ab-81-78-211-83.ngrok-free.app/add-note`, {
+        const response = await fetch(`https://mint-cricket-rare.ngrok-free.app/add-note`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -340,10 +340,11 @@
         throw error;
       }
     }
-  
+
     // Close QR Popup function
     function closeQRPopup() {
       document.getElementById('qrPopup').style.display = 'none';
+      document.getElementById('btn').reset();
       if (qrCodeScanner) {
         qrCodeScanner.stop().then(ignore => {
           console.log("QR Code scanner stopped.");
@@ -352,12 +353,13 @@
         });
       }
     }
-  
+
     // Open QR Popup function
     async function QRPopup() {
       var popup = document.getElementById('qrPopup');
       popup.style.display = 'block';
-  
+      document.getElementById('qrLoad').innerText = 'Loading...';
+
       try {
         const devices = await Html5Qrcode.getCameras();
         if (devices && devices.length) {
@@ -373,13 +375,13 @@
               console.log(`QR Code detected: ${qrCodeMessage}`);
               document.getElementById('qrLoad').innerText = 'QR Code detected. Sending to server...';
               qrCodeScanner.pause(true); // Pause the scanner
-  
+
               // Send a GET request to the server with the decoded QR code text
-              fetch(`https://b3ab-81-78-211-83.ngrok-free.app/qr-code?code=${encodeURIComponent(qrCodeMessage)}`, {
+              fetch(`https://mint-cricket-rare.ngrok-free.app/qr-code?code=${encodeURIComponent(qrCodeMessage)}`, {
                 headers: {
                   'ngrok-skip-browser-warning': 'true'
                 }
-              }) //run ngrok start --all and copy the https link for port 3003
+              })
                 .then(response => {
                   if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -524,7 +526,7 @@
       document.getElementById('analyseButton').addEventListener('click', function () {
         console.log('Analysing kit...');
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://b3ab-81-78-211-83.ngrok-free.app/kit-analysis', true);
+        xhr.open('GET', 'https://mint-cricket-rare.ngrok-free.app/kit-analysis', true);
         xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
         xhr.onload = function () {
           if (xhr.status === 200) {
@@ -560,7 +562,7 @@
             div.style.display = 'flex';
             document.getElementById(category).style.color = 'var(--primary)';
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `https://b3ab-81-78-211-83.ngrok-free.app/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
+            xhr.open('GET', `https://mint-cricket-rare.ngrok-free.app/kit-analysis-by-category?category=${encodeURIComponent(category)}`, true);
             xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
             xhr.onload = function () {
               if (xhr.status === 200) {
@@ -669,7 +671,7 @@
 
     document.getElementById('fetchDataButton').addEventListener('click', function () {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://b3ab-81-78-211-83.ngrok-free.app/fetch-data', true);
+      xhr.open('GET', 'https://mint-cricket-rare.ngrok-free.app/fetch-data', true);
       xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
@@ -699,7 +701,7 @@
       console.log(`Searching for ${searchTerm} in ${category}...`);
 
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `https://b3ab-81-78-211-83.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
+      xhr.open('GET', `https://mint-cricket-rare.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
       xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {
