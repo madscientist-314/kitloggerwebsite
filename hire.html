@@ -239,7 +239,7 @@
         console.log("Form data as JSON:", jsonData); // Log the form data as JSON
 
         const xhr = new XMLHttpRequest(); // create a new XMLHttpRequest object
-        xhr.open("POST", "http://mint-cricket-rare.ngrok-free.app/submit-form"); // open a new request
+        xhr.open("POST", "https://mint-cricket-rare.ngrok-free.app/submit-form"); // open a new request
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onload = function () { // when the request is loaded
           console.log("Response received:", xhr.responseText); // Log the response from the server

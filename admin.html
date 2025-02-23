@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.3
+  Software: v0.4.0
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -133,10 +133,10 @@
       <h3 id="qrLoad">QR Code Data</h3>
       <div id="modalData"></div>
       <div class="modal-buttons">
-        <button id="loan" onclick="loan_toggle()">Loan</button>
-        <button id="missing" onclick="missing()">Mark as Missing</button>
-        <button onclick="showNote()">Add/Edit Note</button>
-        <button id="expand" onclick="showAllData()">Expand Info</button>
+        <button id="loan" onclick="loan_toggle()" class="button">Loan</button>
+        <button id="missing" onclick="missing()" class="button">Mark as Missing</button>
+        <button onclick="showNote()" class="button">Add/Edit Note</button>
+        <button id="expand" onclick="showAllData()" class="button">Expand Info</button>
       </div>
       <div id="noteSection" class="modal-note" style="display: none;">
         <textarea id="noteText" rows="4" cols="50" placeholder="Enter your note here..."></textarea>
@@ -701,7 +701,7 @@
       console.log(`Searching for ${searchTerm} in ${category}...`);
 
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `https://mint-cricket-rare.ngrok-free.app/search?category=${encodeURIComponent(category)}&term=${encodeURIComponent(searchTerm)}`, true);
+      xhr.open('GET', `https://mint-cricket-rare.ngrok-free.app/search-data?category=${encodeURIComponent(category)}&search=${encodeURIComponent(searchTerm)}`, true);
       xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
       xhr.onload = function () {
         if (xhr.status === 200) {

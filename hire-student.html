@@ -1,5 +1,5 @@
 <!-- GNU AGPLv3.0 2023 
-  Software: v0.3.3
+  Software: v0.4.0
   Kit Logger - DofE Kit Management System
   Copyright (C) 2023 Thomas Kirby
 
@@ -121,95 +121,105 @@
             const key = urlParams.get('key');
             if (key) {
                 // Make an AJAX request to the server with the key
-                fetch(`http://mint-cricket-rare.ngrok-free.app/get-user-details?key=${key}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.expeditionLevel <= 3) {
+                fetch(`https://mint-cricket-rare.ngrok-free.app/get-user-details?key=${key}`, {
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Response:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.expeditionLevel <= 3) {
 
-                            // Display the user's details on the page
-                            document.getElementById('name-display').innerText = data.name;
-                            document.getElementById('group-display').innerText = data.groupNumber;
-                            document.getElementById('group-size-display').innerText = data.groupSize;
-                            if (data.groupSize < 4) {
-                                document.getElementById('group-size-display').style.color = 'red';
-                            } else {
-                                document.getElementById('group-size-display').style.color = 'green';
-                            }
-
-                            switch (data.groupLevel) {
-                                case 1:
-                                    document.getElementById('group-level-display').innerText = 'Bronze';
-                                    break;
-                                case 2:
-                                    document.getElementById('group-level-display').innerText = 'Silver';
-                                    break;
-                                case 3:
-                                    document.getElementById('group-level-display').innerText = 'Gold';
-                                    break;
-                                default:
-                                    document.getElementById('group-level-display').innerText = 'Unknown';
-                                    break;
-                            }
-
-                            switch (data.expeditionLevel) {
-                                case 1:
-                                    document.getElementById('expedition-display').innerText = 'Bronze';
-                                    break;
-                                case 2:
-                                    document.getElementById('expedition-display').innerText = 'Silver';
-                                    break;
-                                case 3:
-                                    document.getElementById('expedition-display').innerText = 'Gold';
-                                    break;
-                                case 0:
-                                    document.getElementById('expedition-display').innerText = 'None';
-                                    break;
-                                default:
-                                    document.getElementById('expedition-display').innerText = 'Unknown';
-                                    break;
-                            }
-
-                            if (document.getElementById('expedition-display').innerText === document.getElementById('group-level-display').innerText) {
-                                document.getElementById('internalHireForm').style.display = 'block';
-                                document.getElementById('expedition-display').style.color = 'green';
-                                document.getElementById('group-level-display').style.color = 'green';
-                            }
-
-                            const detailsDiv = document.getElementById('details');
-                            detailsDiv.innerHTML = ''; // Clear previous details
-
-                            if (data.groupTent1) {
-                                const tent1 = document.createElement('p');
-                                tent1.innerText = `Group Tent 1: ${data.groupTent1}`;
-                                detailsDiv.appendChild(tent1);
-                            }
-                            if (data.groupTent2) {
-                                const tent2 = document.createElement('p');
-                                tent2.innerText = `Group Tent 2: ${data.groupTent2}`;
-                                detailsDiv.appendChild(tent2);
-                            }
-                            if (data.groupTent3) {
-                                const tent3 = document.createElement('p');
-                                tent3.innerText = `Group Tent 3: ${data.groupTent3}`;
-                                detailsDiv.appendChild(tent3);
-                            }
-                            if (data.groupStove1) {
-                                const stove1 = document.createElement('p');
-                                stove1.innerText = `Group Stove 1: ${data.groupStove1}`;
-                                detailsDiv.appendChild(stove1);
-                            }
-                            if (data.groupStove2) {
-                                const stove2 = document.createElement('p');
-                                stove2.innerText = `Group Stove 2: ${data.groupStove2}`;
-                                detailsDiv.appendChild(stove2);
-                            }
+                        // Display the user's details on the page
+                        document.getElementById('name-display').innerText = data.name;
+                        document.getElementById('group-display').innerText = data.groupNumber;
+                        document.getElementById('group-size-display').innerText = data.groupSize;
+                        if (data.groupSize < 4) {
+                            document.getElementById('group-size-display').style.color = 'red';
                         } else {
-                            window.location.href = "/admin.html?" + "key=" + key; // Redirect to the admin page if the expedition level is greater than 3
+                            document.getElementById('group-size-display').style.color = 'green';
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching user details:', error);
-                    });
+
+                        switch (data.groupLevel) {
+                            case 1:
+                                document.getElementById('group-level-display').innerText = 'Bronze';
+                                break;
+                            case 2:
+                                document.getElementById('group-level-display').innerText = 'Silver';
+                                break;
+                            case 3:
+                                document.getElementById('group-level-display').innerText = 'Gold';
+                                break;
+                            default:
+                                document.getElementById('group-level-display').innerText = 'Unknown';
+                                break;
+                        }
+
+                        switch (data.expeditionLevel) {
+                            case 1:
+                                document.getElementById('expedition-display').innerText = 'Bronze';
+                                break;
+                            case 2:
+                                document.getElementById('expedition-display').innerText = 'Silver';
+                                break;
+                            case 3:
+                                document.getElementById('expedition-display').innerText = 'Gold';
+                                break;
+                            case 0:
+                                document.getElementById('expedition-display').innerText = 'None';
+                                break;
+                            default:
+                                document.getElementById('expedition-display').innerText = 'Unknown';
+                                break;
+                        }
+
+                        if (document.getElementById('expedition-display').innerText === document.getElementById('group-level-display').innerText) {
+                            document.getElementById('internalHireForm').style.display = 'block';
+                            document.getElementById('expedition-display').style.color = 'green';
+                            document.getElementById('group-level-display').style.color = 'green';
+                        }
+
+                        const detailsDiv = document.getElementById('details');
+                        detailsDiv.innerHTML = ''; // Clear previous details
+
+                        if (data.groupTent1) {
+                            const tent1 = document.createElement('p');
+                            tent1.innerText = `Group Tent 1: ${data.groupTent1}`;
+                            detailsDiv.appendChild(tent1);
+                        }
+                        if (data.groupTent2) {
+                            const tent2 = document.createElement('p');
+                            tent2.innerText = `Group Tent 2: ${data.groupTent2}`;
+                            detailsDiv.appendChild(tent2);
+                        }
+                        if (data.groupTent3) {
+                            const tent3 = document.createElement('p');
+                            tent3.innerText = `Group Tent 3: ${data.groupTent3}`;
+                            detailsDiv.appendChild(tent3);
+                        }
+                        if (data.groupStove1) {
+                            const stove1 = document.createElement('p');
+                            stove1.innerText = `Group Stove 1: ${data.groupStove1}`;
+                            detailsDiv.appendChild(stove1);
+                        }
+                        if (data.groupStove2) {
+                            const stove2 = document.createElement('p');
+                            stove2.innerText = `Group Stove 2: ${data.groupStove2}`;
+                            detailsDiv.appendChild(stove2);
+                        }
+                    } else {
+                        window.location.href = "/admin?key=" + key; // Redirect to the admin page if the expedition level is greater than 3
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user details:', error);
+                });
             }
         };
     </script>
@@ -231,7 +241,7 @@
             </ul>
         </div>
         <div class="form" id="form" style="text-align: center;">
-            <form class="hire" id="internalHireForm" type="_blank" action="http://localhost:3000/confirm-loan"
+            <form class="hire" id="internalHireForm" type="_blank" action="https://mint-cricket-rare.ngrok-free.app/confirm-loan"
                 method="POST">
                 <ul>
                     <li>
@@ -298,7 +308,7 @@
                 jsonData.key = key;
                 console.log(jsonData);
 
-                fetch("http://mint-cricket-rare.ngrok-free.app/assign-kit", {
+                fetch("https://mint-cricket-rare.ngrok-free.app/assign-kit", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
